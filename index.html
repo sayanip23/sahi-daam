@@ -325,7 +325,7 @@ const SELLERS={
   quality:{catalog:'Cotton Straight Kurti',rating:'4.1',now:{ret:25},catNorm:{ret:18},mine:'25%',catLabel:'18%',fixShare:.34,
    reasons:[['Size correct but too tight',34,'Your clothes are smaller than industry standard sizing and you would need to update correct size information while uploading catalogs'],['Colour different from image',11,'Make sure product images are shot in natural light without filters'],['Completely different product from shown',7,'Make sure the product you are packing is the same as the one ordered by the customer'],['Product was dirty or had stains',5,'Make sure you check quality of products before it is dispatched']],
    fixLabel:'If “too tight” returns stop',fixBtn:'Add size chart to catalog',fixToast:'Size chart added to Cotton Straight Kurti. Tracking returns for 14 days.',fixWhat:'Fixing the size chart'},
-  apTile:'is testing prices for 1 catalog inside the range you set. One WhatsApp update a week.',ceiling:549,apCatalog:'Cotton Straight Kurti',
+  apTile:'is watching your Cotton Straight Kurti between {floor} and ₹549. One WhatsApp update a week.',ceiling:549,apCatalog:'Cotton Straight Kurti',
   first:{en:'Listed my cotton kurti at ₹249',hi:'कॉटन कुर्ता ₹249 पर लिस्ट किया'}
  },
  ramesh:{key:'ramesh',name:'Ramesh Textiles',owner:'Ramesh',av:'RT',color:'#7C4DAB',sub:'Surat · Kurti wholesale',
@@ -433,7 +433,7 @@ function switchSeller(k,screen){
 const TITLES={choose:'Choose a demo seller',home:'Home',catalog:'Single Catalog Upload',pricerec:'Price Recommendation',quality:'Quality Dashboard',autopilot:'Sahi Daam Autopilot',settings:'Settings',about:'About this prototype'};
 const PH={
  orders:['Orders','On Hold, Pending, Ready to Ship, Shipped and Cancelled orders.','Order volume per catalog per day feeds signal 2 (view → order rate) and tells autopilot when a price test has enough data.'],
- returns:['Return/RTO Orders','Orders that came back: RTO (not charged to the seller) and customer returns (return shipping charged).','Her own RTO and return rates replace the category defaults in the floor once a catalog has about 30 orders. This is signal 4.'],
+ returns:['Return/RTO Orders','Orders that came back: RTO (not charged to the seller) and customer returns (return shipping charged).','Your own RTO and return rates replace the category defaults in the floor once a catalog has about 30 orders. This is signal 4.'],
  inventory:['Inventory','Active, out-of-stock, low-stock, blocked and paused catalogs.','Weeks of cover drives the LET GO stage: price to recover cash when stock is ageing.'],
  payments:['Payments','Next payment, last payment, penalties, waivers and compensations.','Actual deductions per order are used to check the floor’s shipping and fee assumptions every week.'],
  ads:['Advertisement','Boost catalogs with a daily budget and duration.','Ad spend ÷ orders gives ad cost per order, which goes into the floor. Autopilot never lets a boosted catalog sell below its floor.'],
@@ -468,13 +468,14 @@ function renderChoose(sc){
 function renderHome(sc){
   const S=D(),Q=S.quality;
   const below=S.rows.filter(r=>r.rec<econ(0,r.x).floor);
+  const thin=S.rows.filter(r=>r.rec>=econ(0,r.x).floor&&econ(r.rec,r.x).contribKept<25);
   const retAdd=econ(0,{...S.base,...Q.now}).floor-econ(0,{...S.base,...Q.catNorm}).floor;
   sc.innerHTML=`
   <p class="hello">Namaste, ${S.name}</p><p class="muted" style="margin:0">Here is what needs your attention today.</p>
   <div class="tiles">
-    <div class="card tile sd-box"><span class="sd-badge">Sahi Daam</span><div class="big">${below.length} of ${S.rows.length}</div><p>catalogs would lose money at the recommended price.</p><button class="btn sd" data-go="pricerec">Review prices</button></div>
+    <div class="card tile sd-box"><span class="sd-badge">Sahi Daam</span><div class="big">${below.length} of ${S.rows.length}</div><p>catalogs would lose money at Meesho’s recommended price.${thin.length?` ${thin.length} more earn${thin.length>1?'':'s'} under ₹25 per order.`:''}</p><button class="btn sd" data-go="pricerec">Review prices</button></div>
     <div class="card tile sd-box"><span class="sd-badge">Sahi Daam</span><div class="big">${inr(retAdd)}</div><p>added to your ${Q.catalog.toLowerCase()} floor by returns above the category rate. Top reason: “${Q.reasons[0][0].toLowerCase()}”.</p><button class="btn sd-ghost" data-go="quality">See return reasons</button></div>
-    <div class="card tile sd-box"><span class="sd-badge">Sahi Daam</span><div class="big">Autopilot</div><p>${S.apTile}</p><button class="btn sd-ghost" data-go="autopilot">Open autopilot</button></div>
+    <div class="card tile sd-box"><span class="sd-badge">Sahi Daam</span><div class="big">Autopilot</div><p>${S.apTile.replace('{floor}',inr(econ(0,S.base).floor))}</p><button class="btn sd-ghost" data-go="autopilot">Open autopilot</button></div>
   </div>
   <div class="quick">${['pricerec:Price Recommendation','catalog:Upload Catalogs','orders:Orders','returns:Return/RTO Orders','inventory:Inventory','payments:Payments','ads:Advertisement','notices:Notice Board'].map(s=>{const[a,b]=s.split(':');return `<button class="btn brand" data-go="${a}">${b}</button>`}).join('')}</div>`;
   sc.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go));
@@ -785,6 +786,11 @@ const h=(location.hash||'').slice(1),[hs,hk]=h.split('-');
 if(SELLERS[hk])SEL=hk;
 renderWho();
 go(h&&(TITLES[hs]||PH[hs])?hs:'choose');
+window.addEventListener('hashchange',()=>{
+  const [s,k]=(location.hash||'').slice(1).split('-');
+  if(SELLERS[k]&&k!==SEL){SEL=k;try{localStorage.setItem('sd-seller',k)}catch(e){}renderWho();}
+  go(TITLES[s]||PH[s]?s:'home');
+});
 })();
 </script>
 

@@ -482,7 +482,7 @@ function renderChoose(sc){
     <div class="top"><div class="big-av" style="background:${S.color}">${S.av}</div><div><h3>${S.name}</h3><div class="muted">${S.owner} · ${S.sub}</div></div></div>
     <div class="facts">${S.facts.map(f=>`<span>${f}</span>`).join('')}</div>
     <p style="margin:0">${S.blurb}</p><blockquote>${esc(S.quote)}</blockquote>
-    <div class="muted" style="font-size:13px">Floor on ${S.cat.name.toLowerCase()}: <b class="num" style="color:var(--sd)">${inr(econ(0,S.base).floor)}</b> · listed at <b class="num" style="color:var(--loss)">${inr(S.cat.price)}</b></div>
+    <div class="muted" style="font-size:13px">Floor on ${S.quality.short}: <b class="num" style="color:var(--sd)">${inr(econ(0,S.base).floor)}</b> · listed at <b class="num" style="color:var(--loss)">${inr(S.cat.price)}</b></div>
     <button class="btn brand" data-seller="${S.key}">Open as ${S.owner}</button></div>`).join('')}</div></div>`;
   sc.querySelectorAll('[data-seller]').forEach(b=>b.onclick=()=>switchSeller(b.dataset.seller,'home'));
 }
@@ -804,7 +804,7 @@ function renderPH(s){
 function renderAbout(sc){
   sc.innerHTML=`<div class="engines">
     <div class="card"><h2>1 · Floor engine</h2><dl><dt>Where</dt><dd>Catalog Upload, next to Meesho Price</dd><dt>Inputs</dt><dd>Purchase cost and GST from the seller; shipping, RTO and return rates from Meesho</dd><dt>Prototype</dt><dd><span class="pill ok">Real math</span> Rekha’s ₹185 kurti reproduces the deck’s ₹345 floor (₹346 rounded up)</dd></dl></div>
-    <div class="card"><h2>2 · Band engine</h2><dl><dt>Where</dt><dd>Catalog Upload band bar; Price Recommendation slider</dd><dt>Inputs</dt><dd>Orders by price for look-alike catalogs, last 30 days</dd><dt>Prototype</dt><dd><span class="pill watch">Simulated</span> One kurti cluster, elasticity 5</dd></dl></div>
+    <div class="card"><h2>2 · Band engine</h2><dl><dt>Where</dt><dd>Catalog Upload band bar; Price Recommendation slider</dd><dt>Inputs</dt><dd>Orders by price for look-alike catalogs, last 30 days</dd><dt>Prototype</dt><dd><span class="pill watch">Simulated</span> One demand curve per category (kurtis, earbuds, chargers…), elasticity 5</dd></dl></div>
     <div class="card"><h2>3 · Autopilot</h2><dl><dt>Where</dt><dd>New Autopilot page; WhatsApp settings</dd><dt>Inputs</dt><dd>Six signals from Orders, Returns, Quality Dashboard, Payments</dd><dt>Prototype</dt><dd><span class="pill ok">Real rules</span> Deck slide 3 thresholds; scripted events per seller</dd></dl></div>
   </div>
   <div class="two">

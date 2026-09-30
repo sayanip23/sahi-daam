@@ -123,7 +123,7 @@ details.math summary{cursor:pointer;color:var(--sd);font-weight:500}
 .stack{display:flex;height:22px;border-radius:5px;overflow:hidden;margin-top:12px}
 .legend{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:4px 14px;margin-top:8px;font-size:12.5px}
 .legend div{display:flex;gap:6px;align-items:center}.legend i{width:10px;height:10px;border-radius:2px;flex:none}.legend .num{margin-left:auto}
-.formula{margin-top:10px;font:12px var(--mono);color:var(--muted);background:#fff;border-radius:6px;padding:8px 10px;overflow-x:auto;white-space:nowrap}
+.formula{margin-top:10px;font:12px/1.5 var(--mono);color:var(--muted);background:#fff;border-radius:6px;padding:8px 10px;white-space:normal;overflow-wrap:anywhere}
 .sizes{width:100%;border-collapse:collapse;margin-top:14px;font-size:13px}
 .sizes th{background:var(--soft);text-align:left;font-weight:500;padding:8px}
 .sizes td{padding:8px;border-top:1px solid var(--line)}
@@ -293,13 +293,19 @@ let toastT;function toast(t){let el=document.querySelector('.toast');if(!el){el=
 /* ================= ENGINE ================= */
 const SLABS=[{fwd:65,rev:155},{fwd:85,rev:190}];
 function econ(p,x,units){
+  /* Deck formula: Floor = (Product cost + Packaging + Shipping + GST on shipping + Ad spend + Target profit) ÷ parcels that stay sold */
   units=units||1;
-  const g=x.gst?(x.gstRate||5)/100:0, D=100;
+  const g=x.gst?(x.gstRate||5)/100:0, D=100, SHIP_GST=0.18, tgt=(x.target||0)*units;
   const dl=D*(1-x.rto/100), rt=dl*x.ret/100, K=dl-rt, rto=D-dl, fail=D-K;
-  const parts={goods:x.cost*units*(K+x.uns/100*fail),fwd:x.fwd*dl,rev:x.rev*rt,pack:x.pack*D,ads:x.ads*D};
-  const cost=Object.values(parts).reduce((a,b)=>a+b,0);
-  const cpk=cost/K, floor=Math.ceil(cpk*(1+g)), pnet=p/(1+g);
-  return {g,dl,rt,K,rto,fail,parts,cost,cpk,floor,pnet,contribKept:pnet-cpk,contribDisp:(K/100)*pnet-cost/100};
+  const fwd=x.fwd*dl, rev=x.rev*rt;
+  const parts={goods:x.cost*units*(K+x.uns/100*fail),pack:x.pack*D,fwd,rev,shipGst:SHIP_GST*(fwd+rev),ads:x.ads*D};
+  const cost=Object.values(parts).reduce((a,b)=>a+b,0);   // real costs on 100 parcels
+  const profit=tgt*K;                                        // target profit on the parcels that stay sold
+  const cpk=cost/K;                                          // cost per kept order
+  const breakEven=Math.ceil(cpk*(1+g));                      // price with ₹0 profit
+  const floor=Math.ceil((cost+profit)/K*(1+g));              // deck floor, includes target profit
+  const pnet=p/(1+g);
+  return {g,dl,rt,K,rto,fail,parts,cost,profit,tgt,cpk,breakEven,floor,pnet,contribKept:pnet-cpk,contribDisp:(K/100)*pnet-cost/100};
 }
 const settle=(p,x)=>p/(x.gst?1+(x.gstRate||5)/100:1)-x.fwd;
 const BINS=[[320,360,5],[360,400,11],[400,440,30],[440,480,32],[480,520,13],[520,560,6],[560,600,3]];
@@ -319,10 +325,10 @@ function launchRule(x,m){
   return {kind:'above',price:null,label:'Floor sits above the band',msg:'Don’t solve this with a price. Change the product, packing, pack size or return policy.'};
 }
 /* Deck "three numbers she never sees": highest return rate this price survives */
-function maxReturn(p,x){if(econ(p,{...x,ret:0}).floor>p)return null;let lo=0,hi=95;for(let i=0;i<30;i++){const mid=(lo+hi)/2;if(econ(p,{...x,ret:mid}).floor<=p)lo=mid;else hi=mid;}return lo;}
+function maxReturn(p,x){if(econ(p,{...x,ret:0}).breakEven>p)return null;let lo=0,hi=95;for(let i=0;i<30;i++){const mid=(lo+hi)/2;if(econ(p,{...x,ret:mid}).breakEven<=p)lo=mid;else hi=mid;}return lo;}
 
-const RB={cost:185,gst:false,gstRate:0,slab:0,fwd:65,rev:155,rto:18,ret:20.73,uns:15,pack:15,ads:0,cpc:0,conv:0};
-const IB={cost:310,gst:true,gstRate:18,slab:0,fwd:65,rev:155,rto:15,ret:15,uns:30,pack:20,ads:40,cpc:2,conv:5};
+const RB={cost:185,gst:false,gstRate:0,slab:0,fwd:65,rev:155,rto:18,ret:20.73,uns:15,pack:15,ads:0,cpc:0,conv:0,target:20};
+const IB={cost:310,gst:true,gstRate:18,slab:0,fwd:65,rev:155,rto:15,ret:15,uns:30,pack:20,ads:40,cpc:2,conv:5,target:20};
 const SELLERS={
  rekha:{key:'rekha',name:'Rekha Fashions',owner:'Rekha',av:'RF',color:'#7C4DAB',sub:'Kanpur · Kurtis',noun:'kurtis',
   facts:['Not GST registered','Age 47 · Kanpur','Kurti shop + Meesho','Lifecycle: Launch → Learn'],
@@ -490,13 +496,13 @@ function renderChoose(sc){
 /* ================= HOME ================= */
 function renderHome(sc){
   const S=D(),Q=S.quality;
-  const below=S.rows.filter(r=>r.rec<econ(0,r.x).floor);
-  const thin=S.rows.filter(r=>r.rec>=econ(0,r.x).floor&&econ(r.rec,r.x).contribKept<25);
+  const below=S.rows.filter(r=>r.rec<econ(0,r.x).breakEven);
+  const thin=S.rows.filter(r=>r.rec>=econ(0,r.x).breakEven&&r.rec<econ(0,r.x).floor);
   const retAdd=econ(0,{...S.base,...Q.now}).floor-econ(0,{...S.base,...Q.catNorm}).floor;
   sc.innerHTML=`
   <p class="hello">Namaste, ${S.name}</p><p class="muted" style="margin:0">Here is what needs your attention today.</p>
   <div class="tiles">
-    <div class="card tile sd-box"><span class="sd-badge">Sahi Daam</span><div class="big">${below.length} of ${S.rows.length}</div><p>catalogs would lose money at Meesho’s recommended price.${thin.length?` ${thin.length} more earn${thin.length>1?'':'s'} under ₹25 per order.`:''}</p><button class="btn sd" data-go="pricerec">Review prices</button></div>
+    <div class="card tile sd-box"><span class="sd-badge">Sahi Daam</span><div class="big">${below.length} of ${S.rows.length}</div><p>catalogs would lose money at Meesho’s recommended price.${thin.length?` ${thin.length} more cover${thin.length>1?'':'s'} costs but miss${thin.length>1?'':'es'} your ₹${S.base.target} target profit.`:''}</p><button class="btn sd" data-go="pricerec">Review prices</button></div>
     <div class="card tile sd-box"><span class="sd-badge">Sahi Daam</span><div class="big">${inr(retAdd)}</div><p>added to your ${Q.short} floor by returns above the category rate. Top reason: “${Q.reasons[0][0].toLowerCase()}”.</p><button class="btn sd-ghost" data-go="quality">See return reasons</button></div>
     <div class="card tile sd-box"><span class="sd-badge">Sahi Daam</span><div class="big">Autopilot</div><p>${S.apTile.replace('{floor}',inr(econ(0,S.base).floor))}</p><button class="btn sd-ghost" data-go="autopilot">Open autopilot</button></div>
   </div>
@@ -505,16 +511,16 @@ function renderHome(sc){
 }
 
 /* ================= CATALOG UPLOAD ================= */
-function bandBar(p,fl,m,opt){
+function bandBar(p,fl,m,opt,be){
   m=m||1;const lo=300*m,hi=620*m,pc=v=>Math.max(0,Math.min(100,(v-lo)/(hi-lo)*100));
-  let h=`<div class="track"><div class="lossz" style="width:${pc(fl)}%"></div><div class="busy" style="left:${pc(400*m)}%;width:${pc(480*m)-pc(400*m)}%"></div></div>`;
+  let h=`<div class="track"><div class="lossz" style="width:${pc(be||fl)}%"></div><div class="busy" style="left:${pc(400*m)}%;width:${pc(480*m)-pc(400*m)}%"></div></div>`;
   h+=`<div class="mk" style="left:${pc(fl)}%;color:var(--loss)"><i style="background:var(--loss)"></i></div>`;
   if(opt)h+=`<div class="mk" style="left:${pc(opt)}%;color:var(--sd)"><i style="background:var(--sd);opacity:.5"></i></div>`;
   h+=`<div class="mk" style="left:${pc(p)}%;top:6px"><i style="background:var(--ink);width:4px;height:36px"></i></div>`;
   [400,480].forEach(v=>h+=`<span class="ax" style="left:${pc(v*m)}%">${inr(v*m)}</span>`);
   return h;
 }
-const PART_META=[['goods','Goods, incl. unsellable returns','#7C68A6'],['fwd','Forward shipping','#0B7A68'],['rev','Return shipping','#C62828'],['pack','Packing + labour','#B9AED0'],['ads','Ads','#D18A00']];
+const PART_META=[['goods','Product cost, incl. unsellable returns','#7C68A6'],['pack','Packaging + labour','#B9AED0'],['fwd','Forward shipping','#0B7A68'],['rev','Return shipping','#C62828'],['shipGst','GST on shipping (18%)','#5C6BC0'],['ads','Ad spend','#D18A00'],['profit','Your target profit','#2E7D32']];
 function renderCatalog(sc){
   const CAT=D().cat;
   sc.innerHTML=`
@@ -531,6 +537,7 @@ function renderCatalog(sc){
         <div class="f"><label for="c-sku">SKU ID / Product ID (optional)</label><input id="c-sku"></div>
         <div class="f"><label for="c-mrp">MRP</label><input id="c-mrp" type="number"></div>
         <div class="f sdf"><label for="c-cost">Your purchase cost per piece <span class="tag sd" style="margin-left:4px">New</span></label><input id="c-cost" type="number" inputmode="decimal"><div class="inline-floor muted" id="c-costhint"></div></div>
+        <div class="f sdf"><label for="c-target">Profit you want per order <span class="tag sd" style="margin-left:4px">New</span></label><input id="c-target" type="number" inputmode="decimal"><div class="inline-floor muted">Used in your floor · only you see this</div></div>
         <div class="f"><label for="c-size"><span id="c-sizelbl">Size</span> <em>*</em></label><select id="c-size"><option id="c-sizeopt"></option></select></div>
       </div>
       <div class="sd-box sd-panel">
@@ -560,7 +567,7 @@ function renderCatalog(sc){
             <div>
               <div class="lbl">Out of every 100 parcels dispatched</div>
               <div class="funnel" id="m-funnel" style="margin-top:8px"></div>
-              <div class="lbl" style="margin-top:14px">Cost per kept order</div>
+              <div class="lbl" style="margin-top:14px">Your floor, per order that stays sold</div>
               <div class="stack" id="m-stack"></div><div class="legend" id="m-legend"></div>
               <div class="formula" id="m-formula"></div>
             </div>
@@ -577,9 +584,9 @@ function renderCatalog(sc){
     </div>
   </div>
   <div class="footbar"><button class="btn ghost">Discard Catalog</button><span style="display:flex;gap:8px"><button class="btn ghost">Save and Go back</button><button class="btn brand" id="c-submit">Submit Catalog</button></span></div>`;
-  $('c-price').value=CAT.price;$('c-gst').value=CAT.gst?String(CAT.gstRate):'0';$('c-wt').value=CAT.weight;$('c-mrp').value=CAT.mrp;$('c-cost').value=CAT.cost;$('c-sku').value=CAT.sku;$('c-hsn').value=CAT.hsn;$('c-sizeopt').textContent=CAT.sizeLabel;$('c-varhead').textContent=D().key==='imran'?'Colour':'Size';$('c-sizelbl').textContent=D().key==='imran'?'Colour':'Size';
+  $('c-price').value=CAT.price;$('c-gst').value=CAT.gst?String(CAT.gstRate):'0';$('c-wt').value=CAT.weight;$('c-mrp').value=CAT.mrp;$('c-cost').value=CAT.cost;$('c-target').value=CAT.target;$('c-sku').value=CAT.sku;$('c-hsn').value=CAT.hsn;$('c-sizeopt').textContent=CAT.sizeLabel;$('c-varhead').textContent=D().key==='imran'?'Colour':'Size';$('c-sizelbl').textContent=D().key==='imran'?'Colour':'Size';
   const bindNum=(id,key,cb)=>$(id).addEventListener('input',e=>{const v=parseFloat(e.target.value);CAT[key]=isNaN(v)?0:v;(cb||updCatalog)();});
-  bindNum('c-price','price');bindNum('c-cost','cost');bindNum('c-mrp','mrp');
+  bindNum('c-price','price');bindNum('c-cost','cost');bindNum('c-target','target');bindNum('c-mrp','mrp');
   bindNum('c-wt','weight',()=>{const s=CAT.weight>500?1:0;if(s!==CAT.slab){CAT.slab=s;CAT.fwd=SLABS[s].fwd;CAT.rev=SLABS[s].rev;fillMath();}updCatalog();});
   $('c-gst').onchange=e=>{const r=+e.target.value;CAT.gst=r>0;CAT.gstRate=r;if(!CAT.gst){CAT.ads=0;}else if(CAT.cpc&&CAT.conv){CAT.ads=CAT.cpc/(CAT.conv/100);}fillMath();updCatalog();};
   ['fwd','rev','rto','ret','uns','pack'].forEach(k=>bindNum('m-'+k,k));
@@ -594,12 +601,12 @@ function fillMath(){const CAT=D().cat;['fwd','rev','rto','ret','uns','pack'].for
   const upd=()=>{CAT.cpc=parseFloat($('m-cpc').value)||0;CAT.conv=parseFloat($('m-conv').value)||0;CAT.ads=CAT.conv>0?CAT.cpc/(CAT.conv/100):0;updCatalog();};
   $('m-cpc').oninput=upd;$('m-conv').oninput=upd;}
 function updCatalog(){
-  const S=D(),CAT=S.cat,m=CAT.m||1,p=CAT.price,e=econ(p,CAT),fl=e.floor,opt=optimum(CAT,m),below=p<fl,b=BAND(m);
-  $('c-inline').innerHTML=`<span style="color:var(--sd);font-weight:500">■ Your floor: ${inr(fl)}</span> · ${below?`<span style="color:var(--loss)">you lose ${amt(e.contribKept)} per order</span>`:`<span style="color:var(--gain)">you earn ${inr(e.contribKept)} per order</span>`}<br><span class="muted">Bank settlement per delivered order: ${inr(settle(p,CAT))}</span>`;
+  const S=D(),CAT=S.cat,m=CAT.m||1,p=CAT.price,e=econ(p,CAT),fl=e.floor,opt=optimum(CAT,m),below=p<e.breakEven,b=BAND(m);
+  $('c-inline').innerHTML=`<span style="color:var(--sd);font-weight:500">■ Your floor: ${inr(fl)}</span> · ${below?`<span style="color:var(--loss)">you lose ${amt(e.contribKept)} per order</span>`:p<fl?`<span style="color:var(--warn)">you earn ${inr(e.contribKept)}, below your ₹${CAT.target} target</span>`:`<span style="color:var(--gain)">you earn ${inr(e.contribKept)} per order</span>`}<br><span class="muted">Bank settlement per delivered order: ${inr(settle(p,CAT))}</span>`;
   $('c-costhint').textContent=CAT.gst?'Excluding GST (you claim input credit) · only you see this':'Including GST you paid · only you see this';
-  $('c-head').innerHTML=`Below <span class="fl num">${inr(fl)}</span>, you lose money on ${esc(CAT.headNoun)}.`;
+  $('c-head').innerHTML=`Your floor is <span class="fl num">${inr(fl)}</span> on ${esc(CAT.headNoun)}.`+`<div style="font-size:14px;font-weight:400;margin-top:4px" class="muted">That covers every cost plus your ₹${CAT.target||0} target profit. Below <b class="num">${inr(e.breakEven)}</b> (break-even) you lose money.</div>`;
   $('c-verdict').innerHTML=below?`<span class="pill loss">At ${inr(p)}: −${amt(e.contribKept)} per kept order</span>`:`<span class="pill gain">At ${inr(p)}: +${inr(e.contribKept)} per kept order</span>`;
-  $('c-n1').textContent=inr(fl);
+  $('c-n1').textContent=inr(e.breakEven);
   const n3=$('c-n3');n3.textContent=inr(e.contribKept);n3.style.color=below?'var(--loss)':'var(--gain)';
   const mr=maxReturn(p,CAT),n2=$('c-n2');
   n2.innerHTML=mr===null?'—':`${mr.toFixed(1)}% <span class="muted" style="font-size:12px">(yours: ${CAT.ret.toFixed(0)}%)</span>`;
@@ -607,18 +614,19 @@ function updCatalog(){
   $('c-viab').innerHTML=mr===null?`<span class="pill loss">Not viable</span> At ${inr(p)} you lose money even if nobody returns anything.`
     :mr<CAT.ret?`<span class="pill loss">Not viable</span> Your ${CAT.ret.toFixed(0)}% return rate is above the ${mr.toFixed(1)}% this price can survive. Fix the returns or the price; ads won’t help.`
     :`<span class="pill gain">Viable</span> Your ${CAT.ret.toFixed(0)}% return rate is within the ${mr.toFixed(1)}% this price can survive. Check this before you advertise.`;
-  $('c-band').innerHTML=bandBar(p,fl,m,opt);
-  $('c-bandnote').textContent=`Purple = where 62% of orders for ${S.noun} like yours land (${inr(b.lo)}–${inr(b.hi)}). Striped = below your floor. Black line = your price.`;
+  $('c-band').innerHTML=bandBar(p,fl,m,opt,e.breakEven);
+  $('c-bandnote').textContent=`Purple = where 62% of orders for ${S.noun} like yours land (${inr(b.lo)}–${inr(b.hi)}). Striped = below break-even (you lose money). Red line = your floor. Black line = your price.`;
   const L=launchRule(CAT,m);
   $('c-actions').innerHTML=`<div style="width:100%"><span class="lbl">Decision rule · ${L.label}</span><div style="margin:2px 0 8px">${L.msg}</div></div>`+
     (L.price===null?`<span class="pill watch">No safe launch price in this band</span>`:(p!==L.price?`<button class="btn sd" id="c-use">Use ${inr(L.price)}</button>`:`<span class="pill gain">Launch price set by the decision rule</span>`))+
     `<span class="muted" style="font-size:12.5px">After 50 reviews, autopilot tests its way toward about ${inr(opt)}.</span>`;
   const u=$('c-use');if(u)u.onclick=()=>{CAT.price=L.price;$('c-price').value=L.price;updCatalog();toast(`Meesho Price set to ₹${L.price}`);};
   $('m-funnel').innerHTML=[['Dispatched',100,''],['Delivered',e.dl,''],['Kept',e.K,'k']].map(r=>`<div class="frow"><span>${r[0]}</span><div><div class="fbar ${r[2]}" style="width:${r[1]}%"></div></div><span class="num" style="text-align:right">${r[1].toFixed(0)}</span></div>`).join('');
-  const parts=PART_META.filter(m=>e.parts[m[0]]>0);
-  $('m-stack').innerHTML=parts.map(m=>`<div style="width:${e.parts[m[0]]/e.cost*100}%;background:${m[2]}"></div>`).join('');
-  $('m-legend').innerHTML=parts.map(m=>`<div><i style="background:${m[2]}"></i>${m[1]}<span class="num">${inr(e.parts[m[0]]/e.K)}</span></div>`).join('')+(e.g?`<div><i style="background:#8A90A2"></i>GST ${Math.round(e.g*100)}% on top<span class="num">${inr(e.cpk*e.g)}</span></div>`:'');
-  const q=e.parts;$('m-formula').textContent=`floor = (${Math.round(q.pack)} + ${Math.round(q.fwd)} + ${Math.round(q.goods)} + ${Math.round(q.rev)}${q.ads?' + '+Math.round(q.ads):''}) ÷ ${e.K.toFixed(1)} kept${e.g?' × '+(1+e.g).toFixed(2):''} = ${inr(fl)}`;
+  const all={...e.parts,profit:e.profit},tot=e.cost+e.profit;
+  const parts=PART_META.filter(m=>all[m[0]]>0);
+  $('m-stack').innerHTML=parts.map(m=>`<div style="width:${all[m[0]]/tot*100}%;background:${m[2]}"></div>`).join('');
+  $('m-legend').innerHTML=parts.map(m=>`<div><i style="background:${m[2]}"></i>${m[1]}<span class="num">${inr(all[m[0]]/e.K)}</span></div>`).join('')+(e.g?`<div><i style="background:#8A90A2"></i>Product GST ${Math.round(e.g*100)}% on top<span class="num">${inr(tot/e.K*e.g)}</span></div>`:'');
+  const q=e.parts,r0=v=>Math.round(v).toLocaleString('en-IN');$('m-formula').textContent=`Floor = (product ${r0(q.goods)} + packaging ${r0(q.pack)} + shipping ${r0(q.fwd+q.rev)} + GST on shipping ${r0(q.shipGst)} + ads ${r0(q.ads)} + target profit ${r0(e.profit)}) ÷ ${e.K.toFixed(1)} parcels that stay sold${e.g?' × '+(1+e.g).toFixed(2)+' product GST':''} = ${inr(fl)}`;
 }
 
 /* ================= PRICE RECOMMENDATION ================= */
@@ -635,15 +643,15 @@ const x9up=fl=>{let v=Math.ceil(fl/10)*10-1;return v<fl?v+10:v;};
 function drawPR(){
   const ROWS=D().rows;
   $('pr-body').innerHTML=ROWS.map(r=>{
-    const fl=econ(0,r.x).floor, er=econ(r.rec,r.x), recBad=r.rec<fl, thin=!recBad&&er.contribKept<25;
+    const e0=econ(0,r.x),fl=e0.floor,be=e0.breakEven,er=econ(r.rec,r.x),recBad=r.rec<be,thin=!recBad&&r.rec<fl;
     return `<tr>
       <td class="pname"><a href="#pricerec">${esc(r.name)}</a><small>Type: ${r.type}</small><small>Category: ${r.cat}</small><small>Catalog ID: ${r.cid}</small></td>
       <td><div class="price num">${inr(r.cur)}</div><div class="settle">Bank Settlement: ${inr(settle(r.cur,r.x))}</div></td>
       <td class="rec"><div class="price num">${inr(r.rec)}</div><div class="settle">Bank Settlement: ${inr(settle(r.rec,r.x))}</div></td>
       <td class="sdc"><div class="price num" style="color:var(--sd);font-weight:500">${inr(fl)}</div>
-        <div style="margin-top:6px">${recBad?`<span class="pill loss">Recommended loses ${amt(er.contribKept)}/order</span>`:thin?`<span class="pill watch">Recommended earns only ${inr(er.contribKept)}/order</span>`:`<span class="pill gain">Recommended earns ${inr(er.contribKept)}/order</span>`}</div>
-        ${r.cur<fl?`<div class="settle" style="color:var(--loss)">Current price is also below floor</div>`:''}</td>
-      <td style="max-width:230px">${esc(r.ins)}${recBad?`<div class="settle" style="color:var(--sd);margin-top:8px"><b>Sahi Daam:</b> matching this price loses money. ${r.cur<fl?`Raise to ${inr(x9up(fl))} or bundle instead.`:'Keep your current price and improve images or ratings.'}</div>`:thin?`<div class="settle" style="color:var(--sd);margin-top:8px"><b>Sahi Daam:</b> one extra return wipes out this margin. Keep ${inr(r.cur)}.</div>`:''}</td>
+        <div style="margin-top:6px">${recBad?`<span class="pill loss">Recommended loses ${amt(er.contribKept)}/order</span>`:thin?`<span class="pill watch">Recommended earns ${inr(er.contribKept)}, below ₹${r.x.target} target</span>`:`<span class="pill gain">Recommended earns ${inr(er.contribKept)}/order</span>`}<div class="settle">Break-even ${inr(be)} · floor includes ₹${r.x.target} profit</div></div>
+        ${r.cur<be?`<div class="settle" style="color:var(--loss)">Current price also loses money</div>`:r.cur<fl?`<div class="settle" style="color:var(--warn)">Current price is below your floor</div>`:''}</td>
+      <td style="max-width:230px">${esc(r.ins)}${recBad?`<div class="settle" style="color:var(--sd);margin-top:8px"><b>Sahi Daam:</b> matching this price loses money. ${r.cur<fl?`Raise to ${inr(x9up(fl))} or bundle instead.`:'Keep your current price and improve images or ratings.'}</div>`:thin?`<div class="settle" style="color:var(--sd);margin-top:8px"><b>Sahi Daam:</b> this covers your costs but not your ₹${r.x.target} target profit.${r.cur>=fl?` Keep ${inr(r.cur)}.`:''}</div>`:''}</td>
       <td><div class="act"><div class="pin"><input id="pi-${r.id}" type="number" value="${r.edit}" aria-label="Price for ${esc(r.name)}"><button data-pop="${r.id}" aria-label="Adjust price">✎</button></div>
         <button class="btn green" data-upd="${r.id}">Update CATALOG Price</button>
         ${openPop===r.id?popHTML(r):''}</div></td></tr>`;
@@ -651,7 +659,7 @@ function drawPR(){
   document.querySelectorAll('[data-pop]').forEach(b=>b.onclick=()=>{openPop=openPop===b.dataset.pop?null:b.dataset.pop;drawPR();});
   document.querySelectorAll('.pin input').forEach(inp=>inp.oninput=e=>{const r=ROWS.find(x=>'pi-'+x.id===inp.id);r.edit=+e.target.value||0;});
   document.querySelectorAll('[data-upd]').forEach(b=>b.onclick=()=>{const r=ROWS.find(x=>x.id===b.dataset.upd);const fl=econ(0,r.x).floor;
-    if(r.edit<fl){openPop=r.id;drawPR();toast(`₹${r.edit} is below your ₹${fl} floor. Check the slider before updating.`);return;}
+    if(r.edit<fl){openPop=r.id;drawPR();toast(`₹${r.edit} is below your ₹${fl} floor${r.edit<econ(0,r.x).breakEven?' and loses money':''}. Check the slider before updating.`);return;}
     r.cur=r.edit;openPop=null;drawPR();toast(`${r.name}: price updated to ₹${r.edit}`);});
   if(openPop){const r=ROWS.find(x=>x.id===openPop);
     $('pop-range').oninput=e=>{r.edit=+e.target.value;$('pi-'+r.id).value=r.edit;updPop(r);};
@@ -664,17 +672,19 @@ function popHTML(r){const [lo,hi]=popRange(r),fl=econ(0,r.x).floor,pc=v=>Math.ma
   return `<div class="pop" role="dialog" aria-label="Adjust price">
     <div style="display:flex;justify-content:space-between;font-size:12px"><span class="num">${inr(lo)}</span><b class="num" id="pop-val" style="font-size:14px"></b><span class="num">${inr(hi)}</span></div>
     <input type="range" id="pop-range" min="${lo}" max="${hi}" step="1" value="${r.edit}" aria-label="Price">
-    <div class="flowtrack"><div class="lz" style="width:${pc(fl)}%"></div><div class="bz" style="left:${pc(400*r.m)}%;width:${pc(480*r.m)-pc(400*r.m)}%"></div></div>
+    <div class="flowtrack"><div class="lz" style="width:${pc(econ(0,r.x).breakEven)}%"></div><div class="bz" style="left:${pc(400*r.m)}%;width:${pc(480*r.m)-pc(400*r.m)}%"></div></div>
     <div class="scale"><span style="left:${pc(fl)}%;color:var(--loss)">floor ${inr(fl)}</span><span style="left:${pc(r.rec)}%;top:15px;color:#3949AB">rec ${inr(r.rec)}</span></div>
     <div class="settle" id="pop-settle"></div><div class="msg" id="pop-msg"></div>
     <div class="row2"><button class="btn ghost" id="pop-cancel">Cancel</button><button class="btn ghost" id="pop-ok">Update</button></div></div>`;}
-function updPop(r){const e=econ(r.edit,r.x),fl=e.floor,m=r.m;
+function updPop(r){const e=econ(r.edit,r.x),fl=e.floor,be=e.breakEven,m=r.m;
   $('pop-val').textContent=inr(r.edit);$('pop-settle').textContent='Bank Settlement: '+inr(settle(r.edit,r.x));
   const msg=$('pop-msg');
-  if(r.edit<fl){msg.className='msg bad';msg.innerHTML=`<b>Competitive, but below your floor.</b> You lose ${amt(e.contribKept)} on every kept order.`;}
+  if(r.edit<be){msg.className='msg bad';msg.innerHTML=`<b>Competitive, but below break-even (${inr(be)}).</b> You lose ${amt(e.contribKept)} on every kept order.`;}
+  else if(r.edit<fl){msg.className='msg meh';msg.innerHTML=`<b>Covers costs, but below your floor (${inr(fl)}).</b> You earn ${inr(e.contribKept)}, less than your ₹${r.x.target} target.`;}
   else if(r.edit<=480*m){msg.className='msg good';msg.innerHTML=`<b>Competitive and profitable.</b> You earn ${inr(e.contribKept)} per kept order.`;}
   else {msg.className='msg meh';msg.innerHTML=`<b>Profitable, but above where most orders land.</b> You earn ${inr(e.contribKept)} per kept order, on fewer orders.`;}
 }
+
 
 /* ================= QUALITY ================= */
 function renderQuality(sc){
@@ -693,7 +703,7 @@ function renderQuality(sc){
         <div><div class="lbl">Floor at your ${Q.mine} return rate</div><div class="num" style="font-size:22px;color:var(--loss)">${inr(fN)}</div></div>
         <div><div class="lbl">${Q.fixLabel}</div><div class="num" style="font-size:22px;color:var(--gain)">${inr(fF)}</div></div>
       </div>
-      <p style="margin:10px 0 0">Returns above the category rate add <b>${inr(fN-fB)}</b> to the lowest price you can survive at. ${Q.fixWhat} is worth <b>${inr(fN-fF)}</b> per piece, without cutting your price.</p>
+      <p style="margin:10px 0 0">Returns above the category rate add <b>${inr(fN-fB)}</b> to your floor. ${Q.fixWhat} is worth <b>${inr(fN-fF)}</b> per piece, without cutting your price.</p>
       <div class="sd-actions"><button class="btn sd" id="q-fix">${Q.fixBtn}</button><span class="muted" style="font-size:12.5px">Sahi Daam will track returns for 14 days before touching price.</span></div>
     </div>
   </div>`;
@@ -711,7 +721,7 @@ function signals(i){
   return [
    ['1. Views',m.views===null?'new listing':(m.views>0?'+':'−')+Math.abs(m.views)+'% WoW','Falls >30% WoW, no season change',m.views===null?P('na','—'):(m.views<=-30&&!m.season)?P('loss','Act'):m.views<=-15?P('watch','Watch'):P('ok','OK')],
    ['2. View → order rate',m.vo===null?'no data yet':m.vo+'% of median','Below 60% of cluster median, 7 days',m.vo===null?P('na','—'):m.vo<60?P('loss','Act'):m.vo<80?P('watch','Watch'):P('ok','OK')],
-   ['3. Earning / kept order',inr(e.contribKept),'Negative, or below ₹25 target',e.contribKept<0?P('loss','Act'):e.contribKept<25?P('watch','Watch'):P('ok','OK')],
+   ['3. Earning / kept order',inr(e.contribKept),`Negative, or below ₹${x.target} target`,e.contribKept<0?P('loss','Act'):e.contribKept<x.target?P('watch','Watch'):P('ok','OK')],
    ['4. Failure rate',m.fail===null?'no data yet':m.fail+'% vs '+avgTxt,'>5 pts above own 30-day avg (or category, if new)',m.fail===null?P('na','—'):(m.fail-m.avg>=5)?P('loss','Act'):(m.fail-m.avg>3)?P('watch','Watch'):P('ok','OK')],
    ['5. Band position',Math.round(pos)+'th pct','Outside middle 50% of band',(pos<25||pos>75)?P('watch','Watch'):P('ok','OK')],
    ['6. Cost inputs',m.costNew||'unchanged','Cost, slab, fee, GST or rate change',m.costNew?P('watch','Recompute'):P('ok','OK')]
@@ -803,7 +813,7 @@ function renderPH(s){
 }
 function renderAbout(sc){
   sc.innerHTML=`<div class="engines">
-    <div class="card"><h2>1 · Floor engine</h2><dl><dt>Where</dt><dd>Catalog Upload, next to Meesho Price</dd><dt>Inputs</dt><dd>Purchase cost and GST from the seller; shipping, RTO and return rates from Meesho</dd><dt>Prototype</dt><dd><span class="pill ok">Real math</span> Rekha’s ₹185 kurti reproduces the deck’s ₹345 floor (₹346 rounded up)</dd></dl></div>
+    <div class="card"><h2>1 · Floor engine</h2><dl><dt>Where</dt><dd>Catalog Upload, next to Meesho Price</dd><dt>Inputs</dt><dd>Purchase cost and GST from the seller; shipping, RTO and return rates from Meesho</dd><dt>Prototype</dt><dd><span class="pill ok">Real math</span> Deck formula: (product + packaging + shipping + GST on shipping + ads + target profit) ÷ parcels that stay sold. Rekha’s ₹185 kurti: break-even ₹368, floor ₹388 with ₹20 profit</dd></dl></div>
     <div class="card"><h2>2 · Band engine</h2><dl><dt>Where</dt><dd>Catalog Upload band bar; Price Recommendation slider</dd><dt>Inputs</dt><dd>Orders by price for look-alike catalogs, last 30 days</dd><dt>Prototype</dt><dd><span class="pill watch">Simulated</span> One demand curve per category (kurtis, earbuds, chargers…), elasticity 5</dd></dl></div>
     <div class="card"><h2>3 · Autopilot</h2><dl><dt>Where</dt><dd>New Autopilot page; WhatsApp settings</dd><dt>Inputs</dt><dd>Six signals from Orders, Returns, Quality Dashboard, Payments</dd><dt>Prototype</dt><dd><span class="pill ok">Real rules</span> Deck slide 3 thresholds; scripted events per seller</dd></dl></div>
   </div>

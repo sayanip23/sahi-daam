@@ -557,7 +557,7 @@ const NAV=[
  ['payments','Payments','pay'],['catalog','Catalog Upload','up',['Sahi Daam','sd']],['ads','Advertisement','ad'],['prodrec','Product Recommendations','prod'],
  ['support','Support','help'],['pricerec','Price Recommendation','price',['Sahi Daam','sd']],['quality','Quality Dashboard','q',['Sahi Daam','sd']],
  ['autopilot','Sahi Daam Autopilot','sd',['New','sd']],['images','Images Bulk Upload','img'],['notices','Notices','note'],['settings','Settings','set',['Sahi Daam','sd']],
- ['choose','Switch demo seller','users'],['about','About this prototype','info']
+ ['choose','Switch demo seller','users']
 ];
 const svg=k=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${I[k]}</svg>`;
 function renderNav(cur){
@@ -581,7 +581,7 @@ function switchSeller(k,screen){
   renderWho();go(screen||(curScreen==='choose'?'home':curScreen));
   toast(`Now viewing as ${D().name}`);
 }
-const TITLES={choose:'Choose a demo seller',home:'Home',catalog:'Single Catalog Upload',pricerec:'Price Recommendation',quality:'Quality Dashboard',autopilot:'Sahi Daam Autopilot',settings:'Settings',about:'About this prototype'};
+const TITLES={choose:'Choose a demo seller',home:'Home',catalog:'Single Catalog Upload',pricerec:'Price Recommendation',quality:'Quality Dashboard',autopilot:'Sahi Daam Autopilot',settings:'Settings'};
 const PH={
  orders:['Orders','On Hold, Pending, Ready to Ship, Shipped and Cancelled orders.','Order volume per catalog per day feeds signal 2 (view → order rate) and tells autopilot when a price test has enough data.'],
  returns:['Return/RTO Orders','Orders that came back: RTO (not charged to the seller) and customer returns (return shipping charged).','Your own RTO and return rates replace the category defaults in the floor once a catalog has about 30 orders. This is signal 4.'],
@@ -598,7 +598,7 @@ function go(s){
   curScreen=s;openPop=null;
   renderNav(s);$('title').textContent=TITLES[s]||PH[s][0];
   const sc=$('screen');
-  ({choose:renderChoose,home:renderHome,catalog:renderCatalog,pricerec:renderPriceRec,quality:renderQuality,autopilot:renderAutopilot,settings:renderSettings,about:renderAbout}[s]||(()=>renderPH(s)))(sc);
+  ({choose:renderChoose,home:renderHome,catalog:renderCatalog,pricerec:renderPriceRec,quality:renderQuality,autopilot:renderAutopilot,settings:renderSettings}[s]||(()=>renderPH(s)))(sc);
   try{history.replaceState(null,'','#'+(s==='choose'?'choose':s+'-'+SEL))}catch(e){}
   window.scrollTo(0,0);
 }

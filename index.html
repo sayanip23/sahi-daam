@@ -119,6 +119,8 @@ main{padding:0 16px 40px;min-width:0}
 .pb-pin.row2{top:26px}.pb-pin.row2::after{height:30px}
 .pb-pin.you span{background:var(--ink)}.pb-pin.you::after{background:var(--ink)}
 .pb-pin.sug span{background:var(--sd)}.pb-pin.sug::after{background:var(--sd)}
+.pb-pin.mee span{background:#3949AB}.pb-pin.mee::after{background:#3949AB}
+.pop-band{margin:4px 0 0}.pop-band .pb-key{display:none}.pop-band .pb-pin span{font-size:12px;padding:2px 6px}
 .pb-buy{position:absolute;top:86px;border-top:3px solid #8E6FCF;display:flex;justify-content:center}
 .pb-buy.r{justify-content:flex-end}.pb-buy.l{justify-content:flex-start}
 .pb-buy span{display:inline-block;font-size:12px;color:#5E4499;font-weight:600;margin-top:3px;white-space:nowrap}
@@ -169,11 +171,12 @@ table.pr th.sdc{color:var(--sd)}
 .act .pin{display:flex;border:1px solid #CBD0DC;border-radius:4px;overflow:hidden}
 .act .pin input{border:0;padding:6px 8px;width:100%;font:500 13px var(--mono)}
 .act .pin button{border:0;background:#fff;border-left:1px solid #CBD0DC;cursor:pointer;padding:0 8px}
-.pop{position:static;margin-top:4px;background:#fff;border:1px solid var(--line);box-shadow:0 8px 30px rgba(20,25,40,.18);border-radius:8px;padding:14px;width:320px}
+.pop{position:static;margin-top:4px;background:#fff;border:1px solid var(--line);box-shadow:0 8px 30px rgba(20,25,40,.18);border-radius:8px;padding:14px;width:340px;max-width:100%}
 .pop input[type=range]{width:100%;accent-color:var(--brand)}
 .pop .scale{position:relative;height:32px}
 .pop .scale span{position:absolute;transform:translateX(-50%);font:11px var(--mono);color:var(--muted)}
 .pop .msg{margin-top:10px;border-radius:6px;padding:8px 10px;font-size:13px}
+.cwarn{margin-top:6px;font-size:12.5px;color:var(--warn);line-height:1.35}
 .pop .msg.bad{background:var(--loss-soft);color:var(--loss)} .pop .msg.good{background:var(--gain-soft);color:var(--gain)} .pop .msg.meh{background:var(--warn-soft);color:var(--warn)}
 .pop .row2{display:flex;justify-content:space-between;gap:8px;margin-top:12px}
 .flowtrack{position:relative;height:10px;margin:6px 0 2px;border-radius:5px;background:#eee;overflow:hidden}
@@ -191,6 +194,8 @@ table.pr th.sdc{color:var(--sd)}
 .ratings .v{font-size:22px;font-weight:700}
 
 .qhead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.qcatsel{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.qcatsel select{border:1px solid #CBD0DC;border-radius:6px;padding:6px 10px;font:600 14px var(--font);color:var(--ink);background:#fff}
 .qseg{display:flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:#fff}
 .qseg button{border:0;background:none;padding:7px 12px;font:500 13px var(--font);color:var(--muted);cursor:pointer}
 .qseg button[aria-pressed="true"]{background:var(--brand-soft);color:var(--brand)}
@@ -214,6 +219,9 @@ table.pr th.sdc{color:var(--sd)}
 .qbig .big{font-size:22px;font-weight:600}
 .qfix{margin-top:14px;background:#fff;border:1px solid var(--sd-line);border-radius:8px;padding:12px}
 .qfixrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:6px}
+.qchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.qchips button{border:1px solid var(--sd-line);background:#fff;border-radius:999px;padding:5px 11px;font:13px var(--font);color:var(--ink);cursor:pointer}
+.qchips button[aria-pressed="true"]{background:var(--sd);border-color:var(--sd);color:#fff}
 .qslide{margin-top:14px;background:#fff;border:1px solid var(--sd-line);border-radius:8px;padding:12px}
 .qslide input[type=range]{width:100%;accent-color:var(--sd);margin-top:8px}
 .qscale{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
@@ -226,7 +234,7 @@ table.pr th.sdc{color:var(--sd)}
 @media (max-width:640px){.qpie{grid-template-columns:minmax(0,1fr);justify-items:center}.qleg{width:100%}.qbar{grid-template-columns:minmax(0,1fr) 70px}.qbar .qbt{grid-column:1/-1;grid-row:2}}
 
 /* autopilot */
-.aprules{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin-top:10px;background:#fff;border:1px solid var(--sd-line);border-radius:8px}
+.aprules{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));margin-top:10px;background:#fff;border:1px solid var(--sd-line);border-radius:8px}
 .aprules .rc{padding:12px 14px;display:flex;flex-direction:column;gap:4px;border-left:1px solid var(--line)}
 .aprules .rc:first-child{border-left:0}
 .aprules .ctl{min-height:34px;display:flex;align-items:center}
@@ -341,7 +349,7 @@ table.mt th.n{text-align:right}
 .shipbar{display:flex;height:12px;border-radius:6px;overflow:hidden;margin:8px 0 4px;background:#EEF0F4}
 
 /* price recommendation, current layout */
-.prwrap{display:grid;grid-template-columns:260px minmax(0,1fr);gap:14px;align-items:start}
+.prwrap{display:grid;grid-template-columns:260px minmax(0,1fr);gap:14px;align-items:stretch} /* left catalog list runs the full height of the right side */
 .catcol{padding:12px}
 .prsearch{width:100%;border:1px solid #CBD0DC;border-radius:6px;padding:8px 10px;font:inherit}
 .catitem{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;text-align:left;background:#fff;border:1px solid var(--line);border-radius:8px;padding:9px 10px;margin-bottom:8px;cursor:pointer;font:inherit;color:var(--ink)}
@@ -401,11 +409,11 @@ function econ(p,x,units){
   const parts={goods:c*(K+x.uns/100*rt),pack:x.pack*D,fwd:0,rev:x.rev*rt,rtoShip:(x.rtoFee||0)*rto,shipGst:SHIP_GST*x.fwd*dl,ads:x.ads*D};
   const other=parts.pack+parts.rev+parts.rtoShip+parts.shipGst+parts.ads;
   const costDl=c*dl+c*x.uns/100*rt+other;                     // slide 5: 8,500 + 150 + 500 + 857 + 2,400
-  const breakEven=Math.floor(costDl*(1+g)/dl);                 // slide 6: ₹153
-  const pnet=p/(1+g), real=(dl*pnet-costDl)/D;                // slide 6: −₹10.73 per order
+  const pnet=p/(1+g);
   const gstAmt=dl*p*g/(1+g);                                  // slide 6 P&L: GST paid to government (₹567)
   const base=parts.goods+other+tgt*K;                          // slide 6 napkin: ₹7,000 + ₹1,357 + ₹2,550 = ₹10,907
   const floor=Math.floor(base/K*(1+(x.gstRate>=12?g:0)));     // slide 6: ₹10,907 ÷ 70 = ₹155; GST-registered sellers (12%+) add product GST
+  const breakEven=floor, real=p-floor;                         // team rule: profit per order = listed price − lowest safe price, nothing else
   const cost=Object.values(parts).reduce((a,b)=>a+b,0);
   return {g,dl,rt,K,rto,fail,parts,cost,costDl,gstAmt,profit:tgt*K,tgt,cpk:cost/K,breakEven,floor,pnet,contribKept:real,contribDisp:real};
 }
@@ -420,9 +428,9 @@ function bandPos(p,m){m=m||1;let c=0;for(const[a,b,s]of BINS){const A=a*m,B=b*m;
 const x9=v=>{let r=Math.round((v+1)/10)*10-1;return r;};
 const BAND=m=>({lo:400*m,hi:480*m,mid:440*m});
 /* "At ₹320 you lose ₹X" or "At ₹320 you earn only ₹X, below your target" */
-function atPrice(p,x,hi){const k=econ(p,x).contribKept,t=x.target||0;
-  if(k<0)return hi?`₹${p} पर आपको हर ऑर्डर पर लगभग ${amt(k)} का नुकसान है।`:`At ₹${p} you lose about ${amt(k)} per order.`;
-  return hi?`₹${p} पर हर ऑर्डर पर सिर्फ़ ${inr(k)} बचते हैं, आपके ₹${t} के लक्ष्य से कम।`:`At ₹${p} you keep only ${inr(k)} per order, below your ₹${t} target.`;}
+function atPrice(p,x,hi){const k=econ(p,x).contribKept;
+  if(k<0)return hi?`₹${p} पर आपको हर ऑर्डर पर ${amt(k)} का नुकसान है।`:`At ₹${p} you lose ${amt(k)} per order.`;
+  return hi?`₹${p} पर हर ऑर्डर पर ${inr(k)} बचते हैं।`:`At ₹${p} you earn ${inr(k)} per order.`;}
 const x9up=fl=>{let v=Math.ceil(fl/10)*10-1;return v<fl?v+10:v;};
 /* Deck slide 4 decision rule: where the floor sits against the band decides the entry price */
 function launchRule(x,m){
@@ -435,25 +443,25 @@ function launchRule(x,m){
 /* deck: the highest failure rate (returns and RTO each at m per 100 parcels) at which this price still doesn't lose money (slide 5: 9.4%) */
 function maxReturn(p,x){const at=m=>econ(p,{...x,rto:m,ret:m/(100-m)*100}).contribKept;if(at(0)<0)return null;let lo=0,hi=49;for(let i=0;i<40;i++){const mid=(lo+hi)/2;if(at(mid)>=0)lo=mid;else hi=mid;}return lo;}
 
-const RB={cost:275,gst:false,gstRate:0,slab:0,fwd:56,rev:160,rto:18,ret:20.73,uns:10,pack:5,ads:0,cpc:0,conv:0,target:20,price:320};
-const IB={cost:385,gst:true,gstRate:18,slab:0,fwd:56,rev:160,rto:15,ret:15,uns:10,pack:5,ads:40,cpc:2,conv:5,target:20,price:549};
+const RB={cost:100,gst:false,gstRate:0,slab:0,fwd:56,rev:160,rto:15,ret:15/85*100,uns:10,pack:5,ads:0,cpc:0,conv:0,target:0,price:140}; // deck slide 6: ₹100 kurti listed at ₹140, 15 RTO + 15 returns per 100 → floor ₹155
+const IB={cost:375,gst:true,gstRate:18,slab:0,fwd:56,rev:160,rto:15,ret:15,uns:10,pack:5,ads:40,cpc:2,conv:5,target:0,price:549};
 const SELLERS={
  rekha:{key:'rekha',name:'Rekha Fashions',owner:'Rekha',av:'RF',color:'#7C4DAB',sub:'Kanpur · Kurtis',noun:'kurtis',
   facts:['Not GST registered','Age 47 · Kanpur','Kurti shop + Meesho','Lifecycle: Launch → Learn'],
   quote:'“Dukaan mein ₹350 ka bechti thi, yahan ₹320 rakh diya, sasta lage.”',
   blurb:'Priced from her shop, then went below it. Sells at a loss and doesn’t know it. Without GST she has no ads, so price is her only lever.',
   base:RB,
-  cat:{...RB,price:320,m:1,name:'Cotton Kurti',headNoun:'this cotton kurti',weight:300,mrp:599,sku:'RF-KUR-185',hsn:'62044390',sizes:['S','M','L'],img:'kurti.jpg',sizeLabel:'S, M, L, XL, XXL'},
+  cat:{...RB,price:140,m:0.42,name:'Cotton Kurti',headNoun:'this cotton kurti',weight:300,mrp:349,sku:'RF-KUR-185',hsn:'62044390',sizes:['S','M','L'],img:'kurti.jpg',sizeLabel:'S, M, L, XL, XXL'},
   rows:[
-   {id:'q1',name:'Cotton Kurti',cat:'Kurtis',cid:'5102447',x:{...RB},m:1,cur:320,rec:309,ins:'Product is priced Rs:11 cheaper by other sellers in the platform'},
+   {id:'q1',name:'Cotton Kurti',cat:'Kurtis',cid:'5102447',x:{...RB},m:0.42,cur:140,rec:135,ins:'Product is priced Rs:5 cheaper by other sellers in the platform'},
    {id:'q2',name:'Printed Rayon Kurti',cat:'Kurtis',cid:'5102460',x:{...RB,cost:160},m:1,cur:350,rec:329,ins:'Product is priced Rs:21 cheaper by other sellers in the platform'},
    {id:'q3',name:'Chikankari Cotton Kurti',cat:'Kurtis',cid:'5102513',x:{...RB,cost:280},m:1.4,cur:699,rec:649,ins:'Product is priced Rs:50 cheaper outside Meesho'}],
-  quality:{catalog:'Cotton Kurti',short:'cotton kurti',rating:'3.9',now:{},catNorm:{ret:18},mine:'21%',catLabel:'18%',fixShare:.26,
+  quality:{catalog:'Cotton Kurti',short:'cotton kurti',rating:'3.9',now:{},catNorm:{ret:15},mine:'18%',catLabel:'15%',fixShare:.26,
    reasons:[['Colour different from image',26,'Make sure product images are shot in natural light without filters'],['Size correct but too loose',17,'Update the size chart with measurements of the actual garment'],['Fabric quality not as expected',12,'Describe the fabric accurately and show a close-up image'],['Product was dirty or had stains',5,'Make sure you check quality of products before it is dispatched']],
    fixLabel:'If “colour different” returns stop',fixBtn:'Replace main photo',fixToast:'New daylight photo uploaded for Cotton Kurti. Tracking returns for 14 days.',fixWhat:'A daylight photo'},
-  apTile:'unlocks price tests at 50 reviews. Until then, Sahi Daam watches your lowest safe price ({floor}) and sends one WhatsApp tip a week.',ceiling:549,apCatalog:'Cotton Kurti',
-  first:{en:'Listed my cotton kurti at ₹320',hi:'कॉटन कुर्ता ₹320 पर लिस्ट किया'},
-  comps:[{name:'Jaipuri cotton straight kurti',price:349,rating:3.8,reviews:1240,del:'5–7 days'},{name:'Printed cotton kurti',price:399,rating:4.0,reviews:860,del:'4–6 days'},{name:'Cotton A-line kurti',price:449,rating:4.2,reviews:2310,del:'3–5 days'},{name:'Rayon straight kurti',price:489,rating:4.1,reviews:540,del:'4–6 days'}]
+  apTile:'unlocks price tests at 50 reviews. Until then, Sahi Daam watches your lowest safe price ({floor}) and sends one WhatsApp tip a week.',ceiling:229,apCatalog:'Cotton Kurti',
+  first:{en:'Listed my cotton kurti at ₹140',hi:'कॉटन कुर्ता ₹140 पर लिस्ट किया'},
+  comps:[{name:'Jaipuri cotton straight kurti',price:149,rating:3.8,reviews:1240,del:'5–7 days'},{name:'Printed cotton kurti',price:159,rating:4.0,reviews:860,del:'4–6 days'},{name:'Cotton A-line kurti',price:179,rating:4.2,reviews:2310,del:'3–5 days'},{name:'Rayon straight kurti',price:199,rating:4.1,reviews:540,del:'4–6 days'}]
  },
  imran:{key:'imran',name:'Imran Electronics',owner:'Imran',av:'IE',color:'#1E6FB8',sub:'Kanpur · Electronics',noun:'earbuds',
   facts:['GST registered · 18%','Age 32 · Kanpur','Runs Meesho Ads','Lifecycle: Launch → Defend'],
@@ -477,27 +485,27 @@ const SELLERS={
 Object.values(SELLERS).forEach(S=>{S.rows.forEach(r=>{r.type='CATALOG';r.edit=r.rec;});S.ap={cur:0,reached:0,accepted:[]};});
 
 /* ---- Rekha: Launch → Learn, non-GST kurti seller ---- */
-const R_LAUNCH=launchRule(RB,1).price;                       // one step above band centre
+const R_M=0.42,R_LAUNCH=launchRule(RB,R_M).price,RBL=inr(Math.round(BAND(R_M).lo)),RBH=inr(Math.round(BAND(R_M).hi));                       // one step above band centre
 const R_TEST=Math.max(x9(R_LAUNCH*0.935),x9up(econ(0,RB).floor)); // deck: step down 5–8%, never below the floor
-const R_RULE=launchRule(RB,1);
-const R_KEEP=c1k(R_TEST,RB)>c1k(R_LAUNCH,RB)?R_TEST:R_LAUNCH; // keep only if earnings per 1,000 views rise
-const R_CATFAIL={...RB,rto:14,ret:18.6};
+const R_RULE=launchRule(RB,R_M);
+const R_KEEP=c1k(R_TEST,RB,R_M)>c1k(R_LAUNCH,RB,R_M)?R_TEST:R_LAUNCH; // keep only if earnings per 1,000 views rise
+const R_CATFAIL={...RB,rto:13,ret:13/87*100};   // similar kurtis: 26 of 100 come back
 SELLERS.rekha.events=[
- {d:'Day 0',date:'12 Sep',name:'Listing day',stage:'LAUNCH',x:{},price:320,after:R_LAUNCH,what:'Her shop price was ₹350. She lists at ₹320 “so it looks cheap”.',m:{views:null,vo:null,fail:null,avg:null,costNew:'first listing'},
-  rule:`Signal 3 fires: earning per kept order is ${econ(320,RB).contribKept<0?'negative':'below her ₹20 target'}. Decision rule: ${R_RULE.kind==='below'?'her floor sits well below the kurti band, so enter one step above the band’s centre':'her floor sits inside the kurti band, so enter just above the floor'} (₹${R_LAUNCH}). Without GST she can’t run ads, so the first price has to do the work.`},
- {d:'Day 14',date:'26 Sep',name:'First returns',stage:'LAUNCH',x:{},price:R_LAUNCH,after:R_LAUNCH,what:'35 of every 100 parcels fail (18 RTO, 17 returns). Similar kurtis fail 30. Top return reason: “colour different from image”.',m:{views:25,vo:90,fail:35,avg:30,avgLabel:'category'},
+ {d:'Day 0',date:'12 Sep',name:'Listing day',stage:'LAUNCH',x:{},price:140,after:R_LAUNCH,what:'Her kurti costs ₹100. She lists it at ₹140, expecting ₹40 profit on every piece.',m:{views:null,vo:null,fail:null,avg:null,costNew:'first listing'},
+  rule:`Signal 3 fires: profit per order is ${econ(140,RB).contribKept<0?'negative':'thin'}. Decision rule: ${R_RULE.kind==='below'?'her floor sits well below the kurti band, so enter one step above the band’s centre':'her floor sits inside the kurti band, so enter just above the floor'} (₹${R_LAUNCH}). Without GST she can’t run ads, so the first price has to do the work.`},
+ {d:'Day 14',date:'26 Sep',name:'First returns',stage:'LAUNCH',x:{},price:R_LAUNCH,after:R_LAUNCH,what:'30 of every 100 parcels come back (15 RTO, 15 returns). Similar kurtis: 26. Top return reason: “colour different from image”.',m:{views:25,vo:90,fail:30,avg:24,avgLabel:'category'},
   rule:'Signal 4 fires: failure rate is more than 5 points above the category. Symptom → action: fix the cause before touching price. A daylight photo is cheaper than a price cut.'},
- {d:'Day 30',date:'12 Oct',name:'Clicks, few orders',stage:'LEARN',x:{},price:R_LAUNCH,after:R_KEEP,what:'52 reviews at 4.0★. Views are normal, but orders are only 55% of similar kurtis.',m:{views:5,vo:55,fail:31,avg:33},
+ {d:'Day 30',date:'12 Oct',name:'Clicks, few orders',stage:'LEARN',x:{},price:R_LAUNCH,after:R_KEEP,what:'52 reviews at 4.0★. Views are normal, but orders are only 55% of similar kurtis.',m:{views:5,vo:55,fail:27,avg:26},
   rule:`Signal 2 fires. Symptom → action: “Clicks but no orders → step down 5–8%. No lift means price was never the issue.” Autopilot tests ₹${R_TEST} for 7 days and keeps it only if earnings per 1,000 views rise.`},
- {d:'Day 45',date:'27 Oct',name:'Costs change',stage:'LEARN',x:{rev:175},price:R_KEEP,after:R_KEEP,what:'Meesho revises the return fee from ₹160 to ₹175. Her price hasn’t changed since the test.',m:{views:3,vo:84,fail:31,avg:32,costNew:'return fee ₹160 → ₹175'},
+ {d:'Day 45',date:'27 Oct',name:'Costs change',stage:'LEARN',x:{rev:175},price:R_KEEP,after:R_KEEP,what:'Meesho revises the return fee from ₹160 to ₹175. Her price hasn’t changed since the test.',m:{views:3,vo:84,fail:27,avg:26,costNew:'return fee ₹160 → ₹175'},
   rule:'Signal 6 fires: a cost input changed. Rule: recompute every floor automatically, so “set it and forget it” can’t turn into a silent loss.'}];
 SELLERS.rekha.T=function(i,x,fl){
-  if(i===0){const loss=amt(econ(320,x).contribKept),ins=R_RULE.kind!=='below';
-    const en2=ins?`Without GST you can sell only within your state and can’t run ads, so price is the main thing you can change. Your lowest safe price is inside the range where kurtis like yours sell (₹400–₹480). Start just above it at ₹${R_LAUNCH} and think of the first 50 orders as learning.`:`Without GST you can sell only within your state and can’t run ads, so price is the main thing you can change. Kurtis like yours sell between ₹400 and ₹480. Start at ₹${R_LAUNCH}: it is easier to lower a price than to raise it.`;
-    const hi2=ins?`GST के बिना आप सिर्फ़ अपने राज्य में बेच सकती हैं और विज्ञापन नहीं चला सकतीं, इसलिए दाम ही आपका मुख्य ज़रिया है। आपका सबसे कम सुरक्षित दाम उसी दायरे में है जहाँ आपके जैसे कुर्ते बिकते हैं (₹400–₹480)। ₹${R_LAUNCH} से शुरू करें और पहले 50 ऑर्डर से सीखें।`:`GST के बिना आप सिर्फ़ अपने राज्य में बेच सकती हैं और विज्ञापन नहीं चला सकतीं, इसलिए दाम ही आपका मुख्य ज़रिया है। आपके जैसे कुर्ते ₹400 से ₹480 में बिकते हैं। ₹${R_LAUNCH} से शुरू करें: दाम घटाना आसान है, बढ़ाना मुश्किल।`;
-    return{en:[['warn',`${atPrice(320,x)} Your lowest safe price is ${inr(fl)}.`],['',en2]],hi:[['warn',`${atPrice(320,x,1)} आपका सबसे कम सुरक्षित दाम ${inr(fl)} है।`],['',hi2]],cta:{en:`Set ₹${R_LAUNCH}`,hi:`₹${R_LAUNCH} सेट करें`},reply:{en:`Price set to ₹${R_LAUNCH}.`,hi:`दाम ₹${R_LAUNCH} सेट हो गया।`}};}
-  if(i===1){const add=inr(econ(0,x).floor-econ(0,R_CATFAIL).floor);return{en:[['warn',`35 of every 100 parcels come back to you, against 30 for similar kurtis. That raises your lowest safe price by ${add}.`],['','Most returns say “colour different from image”. Reshoot the main photo in daylight instead of cutting the price.']],hi:[['warn',`हर 100 में से 35 पार्सल वापस आ रहे हैं, जबकि मिलते-जुलते कुर्तों में 30। इससे आपका सबसे कम सुरक्षित दाम ${add} बढ़ गया है।`],['','ज़्यादातर रिटर्न में लिखा है “रंग फ़ोटो से अलग”। दाम मत घटाइए, दिन की रोशनी में नई फ़ोटो लीजिए।']],cta:{en:'Replace photo',hi:'फ़ोटो बदलें'},reply:{en:'New photo uploaded. We will track returns for 14 days.',hi:'नई फ़ोटो अपलोड हो गई। अगले 14 दिन हम रिटर्न पर नज़र रखेंगे।'}};}
-  if(i===2){const up=Math.round((Math.pow(R_LAUNCH/R_TEST,5)-1)*100),d=c1k(R_TEST,x)-c1k(R_LAUNCH,x),kept=R_KEEP===R_TEST;
+  if(i===0){const loss=amt(econ(140,x).contribKept),ins=R_RULE.kind!=='below';
+    const en2=ins?`Without GST you can sell only within your state and can’t run ads, so price is the main thing you can change. Your lowest safe price is inside the range where kurtis like yours sell (${RBL}–${RBH}). Start just above it at ₹${R_LAUNCH} and think of the first 50 orders as learning.`:`Without GST you can sell only within your state and can’t run ads, so price is the main thing you can change. Kurtis like yours sell between ${RBL} and ${RBH}. Start at ₹${R_LAUNCH}: it is easier to lower a price than to raise it.`;
+    const hi2=ins?`GST के बिना आप सिर्फ़ अपने राज्य में बेच सकती हैं और विज्ञापन नहीं चला सकतीं, इसलिए दाम ही आपका मुख्य ज़रिया है। आपका सबसे कम सुरक्षित दाम उसी दायरे में है जहाँ आपके जैसे कुर्ते बिकते हैं (${RBL}–${RBH})। ₹${R_LAUNCH} से शुरू करें और पहले 50 ऑर्डर से सीखें।`:`GST के बिना आप सिर्फ़ अपने राज्य में बेच सकती हैं और विज्ञापन नहीं चला सकतीं, इसलिए दाम ही आपका मुख्य ज़रिया है। आपके जैसे कुर्ते ${RBL} से ${RBH} में बिकते हैं। ₹${R_LAUNCH} से शुरू करें: दाम घटाना आसान है, बढ़ाना मुश्किल।`;
+    return{en:[['warn',`${atPrice(140,x)} Your lowest safe price is ${inr(fl)}.`],['',en2]],hi:[['warn',`${atPrice(140,x,1)} आपका सबसे कम सुरक्षित दाम ${inr(fl)} है।`],['',hi2]],cta:{en:`Set ₹${R_LAUNCH}`,hi:`₹${R_LAUNCH} सेट करें`},reply:{en:`Price set to ₹${R_LAUNCH}.`,hi:`दाम ₹${R_LAUNCH} सेट हो गया।`}};}
+  if(i===1){const add=inr(econ(0,x).floor-econ(0,R_CATFAIL).floor);return{en:[['warn',`30 of every 100 parcels come back to you, against 26 for similar kurtis. That raises your lowest safe price by ${add}.`],['','Most returns say “colour different from image”. Reshoot the main photo in daylight instead of cutting the price.']],hi:[['warn',`हर 100 में से 30 पार्सल वापस आ रहे हैं, जबकि मिलते-जुलते कुर्तों में 26। इससे आपका सबसे कम सुरक्षित दाम ${add} बढ़ गया है।`],['','ज़्यादातर रिटर्न में लिखा है “रंग फ़ोटो से अलग”। दाम मत घटाइए, दिन की रोशनी में नई फ़ोटो लीजिए।']],cta:{en:'Replace photo',hi:'फ़ोटो बदलें'},reply:{en:'New photo uploaded. We will track returns for 14 days.',hi:'नई फ़ोटो अपलोड हो गई। अगले 14 दिन हम रिटर्न पर नज़र रखेंगे।'}};}
+  if(i===2){const up=Math.round((Math.pow(R_LAUNCH/R_TEST,5)-1)*100),d=c1k(R_TEST,x,R_M)-c1k(R_LAUNCH,x,R_M),kept=R_KEEP===R_TEST;
     return{en:[['good','You now have 52 reviews. Views are normal, but orders are low for kurtis like yours.'],['',`Try ₹${R_TEST} for 7 days to check whether price is the problem?`]],hi:[['good','अब आपके 52 रिव्यू हैं। व्यू ठीक हैं, पर आपके जैसे कुर्तों के मुक़ाबले ऑर्डर कम हैं।'],['',`क्या 7 दिन ₹${R_TEST} आज़माएँ, यह देखने के लिए कि दाम ही वजह है या नहीं?`]],cta:{en:'Reply 1 to try',hi:'आज़माने के लिए 1 भेजें'},
     reply:kept?{en:`Test done. Orders rose ${up}% and you earned ${inr(d)} more for every 1,000 people who saw it, so ₹${R_TEST} stays.`,hi:`टेस्ट पूरा। ऑर्डर ${up}% बढ़े और हर 1,000 देखने वालों पर ${inr(d)} ज़्यादा कमाई हुई, इसलिए ₹${R_TEST} ही रहेगा।`}
               :{en:`Test done. Orders rose ${up}%, but you earned ${amt(d)} less for every 1,000 people who saw it. Price was not the problem, so we are back at ₹${R_LAUNCH}.`,hi:`टेस्ट पूरा। ऑर्डर ${up}% बढ़े, पर हर 1,000 देखने वालों पर ${amt(d)} कम कमाई हुई। दाम वजह नहीं था, इसलिए वापस ₹${R_LAUNCH} कर दिया।`}};}
@@ -626,17 +634,19 @@ function renderHome(sc){
 
 /* ================= CATALOG UPLOAD ================= */
 /* Simple price bar: red = loss, yellow = low, green = safe; pins for your price and the suggested price; bracket for where most buyers shop */
-function bandBar(p,fl,m,sug,be){
-  m=m||1;const B=BAND(m),lo=Math.min(B.lo*0.62,be*0.78,p*0.85),hi=Math.max(B.hi*1.12,p*1.06,(sug||0)*1.06);
+function bandBar(p,fl,m,sug,be,o){
+  o=o||{};m=m||1;const B=BAND(m);let lo=Math.min(B.lo*0.62,be*0.78,p*0.85),hi=Math.max(B.hi*1.12,p*1.06,(sug||0)*1.06);
+  if(o.range){[lo,hi]=o.range;}   // the price popover passes the slider's own range so the pin sits under the thumb
+  const T=o.short?['✗ Loss','! Low','✓ Safe']:['✗ You lose money','! Low','✓ Safe'],sl=o.sugLabel||'Suggested',yl=o.youLabel===undefined?'Your price ':o.youLabel;
   const pc=v=>Math.max(0,Math.min(100,(v-lo)/(hi-lo)*100)),w=(a,b)=>Math.max(0,pc(b)-pc(a));
   const seg=(a,b,cls,txt)=>`<div class="pb-seg ${cls}" style="left:${pc(a)}%;width:${w(a,b)}%">${w(a,b)>11?txt:''}</div>`;
   const pin=(v,cls,txt)=>`<div class="pb-pin ${cls}${pc(v)<15?' edgeL':pc(v)>85?' edgeR':''}" style="left:${pc(v)}%"><span>${txt}</span></div>`;
   const same=sug&&Math.abs(sug-p)<1,near=sug&&!same&&Math.abs(pc(sug)-pc(p))<40;
-  let h=`<div class="pb-in"><div class="pb-bar">${seg(lo,be,'loss','✗ You lose money')}${seg(be,fl,'low','! Low')}${seg(fl,hi,'safe','✓ Safe')}</div>`;
-  h+=pin(p,'you',same?`Your price ${inr(p)} ✓ suggested`:`Your price ${inr(p)}`);
-  if(sug&&!same)h+=pin(sug,'sug'+(near?' row2':''),`Suggested ${inr(sug)}`);
-  h+=`<div class="pb-buy${pc(B.hi)>70?' r':pc(B.lo)<30?' l':''}" style="left:${pc(B.lo)}%;width:${w(B.lo,B.hi)}%"><span>Most buyers pay ${inr(B.lo)}–${inr(B.hi)}</span></div>`;
-  return h+`</div><div class="pb-key"><span><i class="loss"></i>You lose money</span><span><i class="low"></i>You keep less than you want</span><span><i class="safe"></i>Safe</span>`;
+  let h=`<div class="pb-in"><div class="pb-bar">${seg(lo,be,'loss',T[0])}${seg(be,fl,'low',T[1])}${seg(fl,hi,'safe',T[2])}</div>`;
+  h+=pin(p,'you',same?`${yl}${inr(p)} = ${sl}`:`${yl}${inr(p)}`);
+  if(sug&&!same)h+=pin(sug,(o.sugCls||'sug')+(near?' row2':''),`${sl} ${inr(sug)}`);
+  h+=`<div class="pb-buy${pc(B.hi)>70?' r':pc(B.lo)<30?' l':''}" style="left:${pc(B.lo)}%;width:${w(B.lo,B.hi)}%"><span>${o.short?'Most buyers':'Most buyers pay'} ${inr(B.lo)}–${inr(B.hi)}</span></div>`;
+  return h+`</div><div class="pb-key"><span><i class="loss"></i>You lose money</span>${fl>be?'<span><i class="low"></i>You keep less than you want</span>':''}<span><i class="safe"></i>Safe</span>`;
 }
 const PART_META=[['goods','Product, incl. returns you can’t resell','#7C68A6'],['pack','Packing','#B9AED0'],['fwd','Delivery charge','#0B7A68'],['rev','Return charge','#C62828'],['rtoShip','Undelivered parcels (RTO)','#8D6E63'],['shipGst','18% GST on the delivery charge','#5C6BC0'],['ads','Ads','#D18A00'],['profit','Money you want to keep','#2E7D32']];
 /* Today's Meesho single-catalog flow: Select Category → Add Product Details (Product, Size and Inventory; Product Details; Other Attributes; images) → QC.
@@ -681,11 +691,10 @@ function renderCatalog(sc){
         <div class="sd-head"><div><span class="sd-badge">Sahi Daam · Will I make money at this price?</span><div class="hi-sub">क्या इस दाम पर मुझे फ़ायदा होगा?</div><h3 id="c-head"></h3></div><div id="c-verdict"></div></div>
         <div class="fgrid" style="margin-top:12px">
           <div class="f sdf"><label for="c-cost">What one piece costs you <span class="tag sd" style="margin-left:4px">New</span></label><input id="c-cost" type="number" inputmode="decimal"><div class="inline-floor muted" id="c-costhint"></div></div>
-          <div class="f sdf"><label for="c-target">Money you want to keep per order <span class="tag sd" style="margin-left:4px">New</span></label><input id="c-target" type="number" inputmode="decimal"><div class="inline-floor muted">Only you see this</div></div>
         </div>
         <div class="sd-nums">
-          <div><div class="v" id="c-n1"></div><div class="l">No-loss price: below this you lose money</div></div>
-          <div><div class="v" id="c-n3"></div><div class="l">Money you keep per order at your price, after returns</div></div>
+          <div><div class="v" id="c-n1"></div><div class="l" id="c-n1l">Similar listings on Meesho</div></div>
+          <div><div class="v" id="c-n3"></div><div class="l">Profit per order = your price − lowest safe price</div></div>
           <div><div class="v" id="c-n2"></div><div class="l">Max return rate you can survive at this price (returns and RTO, per 100 parcels)</div></div>
         </div>
         <div class="viab" id="c-viab"></div>
@@ -709,7 +718,7 @@ function renderCatalog(sc){
               <div class="lbl" style="margin:10px 0 6px">Your own costs</div>
               <div class="row"><span>Packing<small>polybag, label, tape · per parcel</small></span><input id="m-pack" type="number"></div>
               <div id="m-adrows"></div>
-              <div class="row"><span>TCS 0.5% + TDS 0.1%<small>left out: you get it back (mentor)</small></span><span class="pill na" style="justify-self:end">₹0</span></div>
+              <div class="row"><span>TCS 0.5% + TDS 0.1%<small>left out: you get it back</small></span><span class="pill na" style="justify-self:end">₹0</span></div>
             </div>
             <div>
               <div class="lbl">Out of every 100 parcels you send</div>
@@ -736,9 +745,9 @@ function renderCatalog(sc){
     </div>
   </div>
   <div class="footbar"><button class="btn ghost">Discard Catalog</button><span style="display:flex;gap:8px"><button class="btn ghost">Save and Go back</button><button class="btn brand" id="c-submit">Submit Catalog</button></span></div>`;
-  $('c-price').value=CAT.price;$('c-wdr').value=CAT.wdr;$('c-gst').value=CAT.gst?String(CAT.gstRate):'0';$('c-wt').value=CAT.weight;$('c-mrp').value=CAT.mrp;$('c-cost').value=CAT.cost;$('c-target').value=CAT.target;$('c-sku').value=CAT.sku;$('c-hsn').value=CAT.hsn;$('c-sizeopt').textContent=CAT.sizeLabel;$('c-varhead').textContent=D().key==='imran'?'Colour':'Size';$('c-sizelbl').textContent=D().key==='imran'?'Colour':'Size';
+  $('c-price').value=CAT.price;$('c-wdr').value=CAT.wdr;$('c-gst').value=CAT.gst?String(CAT.gstRate):'0';$('c-wt').value=CAT.weight;$('c-mrp').value=CAT.mrp;$('c-cost').value=CAT.cost;$('c-sku').value=CAT.sku;$('c-hsn').value=CAT.hsn;$('c-sizeopt').textContent=CAT.sizeLabel;$('c-varhead').textContent=D().key==='imran'?'Colour':'Size';$('c-sizelbl').textContent=D().key==='imran'?'Colour':'Size';
   const bindNum=(id,key,cb)=>$(id).addEventListener('input',e=>{const v=parseFloat(e.target.value);CAT[key]=isNaN(v)?0:v;(cb||updCatalog)();});
-  bindNum('c-price','price');bindNum('c-wdr','wdr');bindNum('c-cost','cost');bindNum('c-target','target');bindNum('c-mrp','mrp');
+  bindNum('c-price','price');bindNum('c-wdr','wdr');bindNum('c-cost','cost');bindNum('c-mrp','mrp');
   bindNum('c-wt','weight',()=>{const s=CAT.weight>500?1:0;if(s!==CAT.slab){CAT.slab=s;CAT.fwd=SLABS[s].fwd;CAT.rev=SLABS[s].rev;fillMath();}updCatalog();});
   $('c-gst').onchange=e=>{const r=+e.target.value;CAT.gst=r>0;CAT.gstRate=r;if(!CAT.gst){CAT.ads=0;}else if(CAT.cpc&&CAT.conv){CAT.ads=CAT.cpc/(CAT.conv/100);}fillMath();updCatalog();};
   ['fwd','rev','rto','ret','uns','pack'].forEach(k=>bindNum('m-'+k,k));
@@ -749,7 +758,7 @@ function renderCatalog(sc){
 function shipPanel(CAT,e,p){
   const mine=(e.parts.rev+e.parts.rtoShip+e.parts.shipGst)/e.K, fl=e.floor/(1+e.g), cust=p+CAT.fwd;
   const pct=v=>Math.round(v*100);
-  return `<h4>Who pays the delivery charge?<span class="mtag">Mentor feedback</span></h4>
+  return `<h4>Who pays the delivery charge?</h4>
    <div class="sub">When a parcel is delivered, the customer pays the delivery charge, but you pay 18% GST on it. You pay the return charge (GST included) on customer returns. Meesho charges nothing when a parcel comes back undelivered (RTO).</div>
    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-top:6px">
      <div><div class="lbl">Customer pays</div><div style="font-size:13.5px"><b class="num">${inr(p)}</b> + <b class="num">${inr(CAT.fwd)}</b> delivery = <b class="num">${inr(cust)}</b> at checkout. Delivery adds <b>${pct(CAT.fwd/p)}%</b> to what the buyer pays, so it changes how many people buy, not what you keep.</div></div>
@@ -768,7 +777,7 @@ function cutPanel(CAT){
   if(CAT.ads>0)add('Halve ad spend','Once over 30% of orders come without ads',{ads:CAT.ads/2});
   L.sort((a,b)=>b[2]-a[2]);
   const all=econ(0,{...CAT,cost:CAT.cost*0.95,ret:Math.max(0,CAT.ret-5),rto:Math.max(0,CAT.rto-5),pack:Math.max(0,CAT.pack-2),ads:CAT.ads/2,...(CAT.slab===1?{slab:0,fwd:SLABS[0].fwd,rev:SLABS[0].rev}:{})}).floor;
-  return `<h4>Cut your costs before you raise your price<span class="mtag">Mentor feedback</span></h4>
+  return `<h4>Cut your costs before you raise your price</h4>
    <div class="sub">A higher price can push buyers away; a lower cost never does. Each change below lowers your lowest safe price.</div>
    <div class="mtw"><table class="mt"><thead><tr><th>Change</th><th>How</th><th class="n">Safe price drops by</th><th class="n">New lowest safe price</th></tr></thead><tbody>
    ${L.map(r=>`<tr><td><b>${r[0]}</b></td><td class="muted">${r[1]}</td><td class="n" style="color:var(--gain)">−${inr(r[2])}</td><td class="n">${inr(r[3])}</td></tr>`).join('')}
@@ -778,7 +787,7 @@ function cutPanel(CAT){
 function compPanel(S,CAT,e){
   const m=CAT.m||1,C=S.comps.map(c=>({...c,price:Math.round(c.price)}));
   const below=C.filter(c=>c.price<e.floor).length, best=C.slice().sort((a,b)=>b.rating-a.rating)[0];
-  return `<h4>Competitors to check before you launch<span class="mtag">Mentor feedback</span></h4>
+  return `<h4>Competitors to check before you launch</h4>
    <div class="sub">Similar listings, sorted by price. Made-up data for the demo.</div>
    <div class="mtw"><table class="mt"><thead><tr><th>Listing</th><th class="n">Price</th><th class="n">Rating</th><th class="n">Reviews</th><th>Delivery</th><th>vs your lowest safe price (${inr(e.floor)})</th></tr></thead><tbody>
    ${C.map(c=>`<tr><td>${esc(c.name)}</td><td class="n">${inr(c.price)}</td><td class="n">${c.rating.toFixed(1)}★</td><td class="n">${c.reviews.toLocaleString('en-IN')}</td><td>${c.del}</td><td>${c.price<e.floor?'<span class="pill loss">✗ Below it</span>':'<span class="pill ok">✓ Above it</span>'}</td></tr>`).join('')}
@@ -794,13 +803,15 @@ function fillMath(){const CAT=D().cat;['fwd','rev','rto','ret','uns','pack'].for
   $('m-cpc').oninput=upd;$('m-conv').oninput=upd;}
 function updCatalog(){
   const S=D(),CAT=S.cat,m=CAT.m||1,p=CAT.price,e=econ(p,CAT),fl=e.floor,opt=optimum(CAT,m),below=p<e.breakEven,b=BAND(m);
-  $('c-inline').innerHTML=`<span style="color:var(--sd);font-weight:500">■ Lowest safe price: ${inr(fl)}</span><br>${below?`<span style="color:var(--loss)">✗ you lose ${amt(e.contribKept)} per order</span>`:p<fl?`<span style="color:var(--warn)">! you keep only ${inr(e.contribKept)}, less than your ₹${CAT.target}</span>`:`<span style="color:var(--gain)">✓ you keep ${inr(e.contribKept)} per order</span>`}<br><span class="muted">Transfer Price (reaches your bank): ${inr(settle(p,CAT))}</span>`;
+  const cw=compWarn(p,compPrices(S,S.rows[0]));
+  $('c-inline').innerHTML=`<span style="color:var(--sd);font-weight:500">■ Lowest safe price: ${inr(fl)}</span><br>${below?`<span style="color:var(--loss)">✗ you lose ${amt(e.contribKept)} per order</span>`:`<span style="color:var(--gain)">✓ you earn ${inr(e.contribKept)} per order</span>`}${cw?`<br><span style="color:var(--warn)">! ${cw.txt}</span>`:''}<br><span class="muted">Transfer Price (reaches your bank): ${inr(settle(p,CAT))}</span>`;
   {const sh=CATX[S.key].wdrShare,xw={...CAT,ret:CAT.ret*sh},ew=econ(CAT.wdr,xw),kw=ew.contribKept;
-   $('c-wdrhint').innerHTML=`<span style="color:var(--sd);font-weight:500">■ Lowest safe price here: ${inr(ew.floor)}</span><br>${kw<0?`<span style="color:var(--loss)">✗ you lose ${amt(kw)} per order</span>`:kw<(CAT.target||0)?`<span style="color:var(--warn)">! you keep only ${inr(kw)}</span>`:`<span style="color:var(--gain)">✓ you keep ${inr(kw)} per order</span>`}<br><span class="muted">Buyer can return only if wrong or broken. Our guess: returns fall to ${(CAT.ret*sh).toFixed(0)}%.</span>`;}
+   $('c-wdrhint').innerHTML=`<span style="color:var(--sd);font-weight:500">■ Lowest safe price here: ${inr(ew.floor)}</span><br>${kw<0?`<span style="color:var(--loss)">✗ you lose ${amt(kw)} per order</span>`:`<span style="color:var(--gain)">✓ you earn ${inr(kw)} per order</span>`}<br><span class="muted">Buyer can return only if wrong or broken. Our guess: returns fall to ${(CAT.ret*sh).toFixed(0)}%.</span>`;}
   $('c-costhint').textContent=CAT.gst?'Without GST (you get that back) · only you see this':'Including the GST you paid · only you see this';
-  $('c-head').innerHTML=`Lowest safe price: <span class="fl num">${inr(fl)}</span> for ${esc(CAT.headNoun)}.`+`<div style="font-size:14px;font-weight:400;margin-top:4px" class="muted">This covers all your costs and returns, plus the ₹${CAT.target||0} you want to keep. Below <b class="num">${inr(e.breakEven)}</b> you lose money.</div>`;
-  $('c-verdict').innerHTML=below?`<span class="pill loss">✗ At ${inr(p)}: you lose ${amt(e.contribKept)} per order</span>`:p<fl?`<span class="pill watch">! At ${inr(p)}: you keep ${inr(e.contribKept)} per order</span>`:`<span class="pill gain">✓ At ${inr(p)}: you keep ${inr(e.contribKept)} per order</span>`;
-  $('c-n1').textContent=inr(e.breakEven);
+  $('c-head').innerHTML=`Lowest safe price: <span class="fl num">${inr(fl)}</span> for ${esc(CAT.headNoun)}.`+`<div style="font-size:14px;font-weight:400;margin-top:4px" class="muted">This covers all your costs and returns. Below it you lose money; above it, profit per order = your price − ${inr(fl)}.</div>`;
+  $('c-verdict').innerHTML=below?`<span class="pill loss">✗ At ${inr(p)}: you lose ${amt(e.contribKept)} per order</span>`:`<span class="pill gain">✓ At ${inr(p)}: you earn ${inr(e.contribKept)} per order</span>`;
+  {const cp=compPrices(S,S.rows[0]),w=compWarn(p,cp);$('c-n1').textContent=`${inr(cp[0])}–${inr(cp[cp.length-1])}`;$('c-n1').style.color=w?'var(--warn)':'var(--ink)';
+   $('c-n1l').innerHTML=w?`Similar listings on Meesho. <b style="color:var(--warn)">${w.n} of ${cp.length} are cheaper than you: expect fewer orders.</b>`:'Similar listings on Meesho. None is cheaper than you.';}
   const n3=$('c-n3');n3.textContent=inr(e.contribKept);n3.style.color=below?'var(--loss)':'var(--gain)';
   const mr=maxReturn(p,CAT),n2=$('c-n2'),myR=Math.round(e.rt),myT=Math.round(e.rto),myF=(e.rt+e.rto)/2;
   n2.innerHTML=mr===null?'0% <span class="muted" style="font-size:12px">(you lose even with no returns)</span>':`${mr.toFixed(1)}% <span class="muted" style="font-size:12px">(yours: ${myR} returns + ${myT} RTO per 100)</span>`;
@@ -809,7 +820,7 @@ function updCatalog(){
     :mr<myF?`<span class="pill loss">✗ Returns too high</span> Out of 100 parcels, ${myR} are returned and ${myT} are not delivered. At ${inr(p)} you can afford only about ${mr.toFixed(1)} of each. Fix the returns or the price; ads won’t help.`
     :`<span class="pill gain">✓ Returns OK</span> Out of 100 parcels, ${myR} are returned and ${myT} are not delivered. At ${inr(p)} you can afford up to ${mr.toFixed(1)} of each.`;
   $('c-band').innerHTML=bandBar(p,fl,m,launchRule(CAT,m).price,e.breakEven);
-  $('c-bandnote').innerHTML=`Below <b>${inr(e.breakEven)}</b> you lose money. From <b>${inr(fl)}</b> up, you keep the ₹${CAT.target||0} you want on every order.`;
+  $('c-bandnote').innerHTML=`Below <b>${inr(fl)}</b> you lose money. Above it, profit per order = your price − ${inr(fl)}.${cw?` <span style="color:var(--warn)">Similar listings sell from ${inr(compPrices(S,S.rows[0])[0])}: a higher price can mean fewer orders.</span>`:''}`;
   const L=launchRule(CAT,m);
   $('c-actions').innerHTML=`<div style="width:100%"><span class="lbl">Sahi Daam suggests</span><div style="margin:2px 0 8px">${({below:'Your lowest safe price is well below where most buyers shop. Start a little above the middle: it is easier to lower a price later than to raise it.',inside:'Your lowest safe price is where most buyers shop. Start just above it and learn from your first 50 orders.',above:'Even your lowest safe price is above where most buyers shop. Changing the price won’t fix this; change the product, packing or pack size.'})[L.kind]}</div></div>`+
     (L.price===null?`<span class="pill watch">No safe price where buyers shop</span>`:(p!==L.price?`<button class="btn sd" id="c-use">Use ${inr(L.price)}</button>`:`<span class="pill gain">✓ Suggested price is set</span>`))+
@@ -821,7 +832,7 @@ function updCatalog(){
   const parts=PART_META.filter(m=>all[m[0]]>0);
   $('m-stack').innerHTML=parts.map(m=>`<div style="width:${all[m[0]]/tot*100}%;background:${m[2]}"></div>`).join('');
   $('m-legend').innerHTML=parts.map(m=>`<div><i style="background:${m[2]}"></i>${m[1]}<span class="num">${inr(all[m[0]]/e.K)}</span></div>`).join('')+(e.g?`<div><i style="background:#8A90A2"></i>Product GST ${Math.round(e.g*100)}% on top<span class="num">${inr(tot/e.K*e.g)}</span></div>`:'');
-  const q=e.parts,r0=v=>Math.round(v).toLocaleString('en-IN');$('m-formula').textContent=`Lowest safe price = (product ${r0(q.goods)} + packing ${r0(q.pack)} + return charges ${r0(q.rev+q.rtoShip)} + 18% GST on delivery charge ${r0(q.shipGst)} + ads ${r0(q.ads)} + money you want ${r0(e.profit)}) ÷ ${e.K.toFixed(1)} parcels that stay sold${e.g&&CAT.gstRate>=12?` × ${(1+e.g).toFixed(2)} product GST`:''} = ${inr(fl)}`;
+  const q=e.parts,r0=v=>Math.round(v).toLocaleString('en-IN');$('m-formula').textContent=`Lowest safe price = (product ${r0(q.goods)} + packing ${r0(q.pack)} + return charges ${r0(q.rev+q.rtoShip)} + 18% GST on delivery charge ${r0(q.shipGst)} + ads ${r0(q.ads)}${e.profit?` + money you want ${r0(e.profit)}`:''}) ÷ ${e.K.toFixed(1)} parcels that stay sold${e.g&&CAT.gstRate>=12?` × ${(1+e.g).toFixed(2)} product GST`:''} = ${inr(fl)}`;
 }
 
 /* ================= PRICE RECOMMENDATION ================= */
@@ -877,13 +888,13 @@ function drawPR(){
    <div class="banner" style="margin-top:12px">These prices are recommended to keep you competitive with other sellers across platforms and increase your visibility and sales</div>
    <div class="tw"><table class="pr"><thead><tr>
      <th>Product</th><th>Current Price</th><th class="rec">Recommended Price</th>
-     <th class="sdc">Lowest safe price<small>सबसे कम सही दाम · all costs + your profit</small></th><th>Action</th></tr></thead><tbody><tr>
+     <th class="sdc">Lowest safe price<small>सबसे कम सही दाम · all your costs</small></th><th>Action</th></tr></thead><tbody><tr>
       <td class="pname"><a href="#pricerec">${esc(r.name)}</a><small>Type: ${r.type}</small><small>Category: ${r.cat}</small><small>Catalog ID: ${r.cid}</small></td>
       <td><div class="price num">${inr(r.cur)}</div><div class="settle">Transfer Price: ${inr(settle(r.cur,r.x))}</div></td>
       <td class="rec"><div class="price num">${inr(r.rec)}</div><div class="settle">Transfer Price: ${inr(settle(r.rec,r.x))}</div></td>
       <td class="sdc"><div class="price num" style="color:var(--sd);font-weight:500">${inr(fl)}</div>
-        <div class="settle" style="margin-top:2px">below ${inr(be)} you lose money</div>
-        <div style="margin-top:8px"><span class="pill ${v.cls}">${v.ic} ${v.txt}</span>${v.sub?`<div class="settle">${v.sub}</div>`:''}</div>${curNote}</td>
+        <div class="settle" style="margin-top:2px">profit = price − ${inr(fl)}</div>
+        <div style="margin-top:8px"><span class="pill ${v.cls}">${v.ic} ${v.txt}</span>${v.sub?`<div class="settle">${v.sub}</div>`:''}</div>${curNote}${(()=>{const w=compWarn(r.edit,compPrices(S,r));return w?`<div class="cwarn">! ${w.txt}</div>`:''})()}</td>
       <td><div class="act"><div class="pin"><input id="pi-${r.id}" type="number" value="${r.edit}" aria-label="Price for ${esc(r.name)}"><button data-pop="${r.id}" aria-label="Edit price">✎</button></div>
         <button class="btn green" data-acc="${r.id}">Accept</button>
         ${openPop===r.id?popHTML(r):''}</div></td></tr>
@@ -910,34 +921,37 @@ function comparePane(S,r){
   C.sort((a,b)=>a.price-b.price);
   const below=C.filter(c=>!c.you&&c.price<fl).length,best=C.filter(c=>!c.you).sort((a,b)=>b.rating-a.rating)[0];
   return `<h2 style="margin:0 0 2px">${esc(r.name)}: your price vs similar products</h2>
-   <div class="muted" style="font-size:12.5px;margin-bottom:10px">On Meesho and other platforms. Simulated data for the demo. <span class="mtag">Mentor feedback</span></div>
+   <div class="muted" style="font-size:12.5px;margin-bottom:10px">On Meesho and other platforms. Simulated data for the demo.</div>
    <div class="mtw"><table class="mt"><thead><tr><th>Product</th><th>Where</th><th class="n">Price</th><th class="n">Rating</th><th class="n">Reviews</th><th>Delivery</th><th class="sdcell">Sahi Daam: vs your lowest safe price (${inr(fl)})</th></tr></thead><tbody>
    ${C.map(c=>`<tr${c.you?' style="background:#F3F1FB"':''}><td>${c.you?'<b>':''}${esc(c.name)}${c.you?'</b>':''}</td><td>${c.plat}</td><td class="n">${inr(c.price)}</td><td class="n">${c.rating.toFixed(1)}★</td><td class="n">${c.reviews.toLocaleString('en-IN')}</td><td>${c.del}</td><td class="sdcell">${c.price<fl?'<span class="pill loss">✗ Below your safe price</span>':'<span class="pill ok">✓ Above your safe price</span>'}</td></tr>`).join('')}
    </tbody></table></div>
    <div class="sd-box" style="margin-top:10px;font-size:13.5px"><b>Sahi Daam:</b> ${below?`${below} seller${below>1?'s are':' is'} cheaper than your lowest safe price. Don’t follow them down; you would lose money. `:''}The best-rated one (${best.rating.toFixed(1)}★) sells at <b class="num">${inr(best.price)}</b>. Buyers pay more for good photos, ratings and fast delivery.</div>`;
 }
 /* plain-language verdict for one price: icon, colour class, sentence */
+/* similar listings for a catalog (main catalog: its own list; others: scaled to the catalog's price level) */
+function compPrices(S,r){const k=(r.m||1)/(S.cat.m||1),main=!r||r.id===S.rows[0].id;return S.comps.map(c=>main?c.price:Math.round(c.price*k/10)*10-1).sort((a,b)=>a-b);}
+function compWarn(p,cp){const n=cp.filter(c=>c<p).length;if(!n)return null;
+  return {n,txt:`${n} of ${cp.length} similar listings are cheaper (from ${inr(cp[0])}). A higher price can mean fewer orders.`,hi:`${cp.length} में से ${n} मिलते-जुलते प्रोडक्ट सस्ते हैं, इसलिए ऑर्डर कम आ सकते हैं।`};}
 function verdict(p,x){const e=econ(p,x),k=e.contribKept;
-  if(p<e.breakEven)return {cls:'loss',ic:'✗',txt:`At ${inr(p)} you lose ${amt(k)} on every order`};
-  if(p<e.floor)return {cls:'watch',ic:'!',txt:`At ${inr(p)} you earn only ${inr(k)} per order`,sub:`You wanted ₹${x.target}`};
+  if(p<e.floor)return {cls:'loss',ic:'✗',txt:`At ${inr(p)} you lose ${amt(k)} on every order`};
   return {cls:'gain',ic:'✓',txt:`At ${inr(p)} you earn ${inr(k)} per order`};}
 function popRange(r){const fl=econ(0,r.x).floor;return [Math.round(Math.min(fl,r.rec)*0.75/10)*10,Math.round(Math.max(r.cur,fl)*1.35/10)*10];}
 function popHTML(r){const [lo,hi]=popRange(r),fl=econ(0,r.x).floor,pc=v=>Math.max(0,Math.min(100,(v-lo)/(hi-lo)*100)).toFixed(1);
   return `<div class="pop" role="dialog" aria-label="Adjust price">
     <div style="display:flex;justify-content:space-between;font-size:12px"><span class="num">${inr(lo)}</span><b class="num" id="pop-val" style="font-size:14px"></b><span class="num">${inr(hi)}</span></div>
     <input type="range" id="pop-range" min="${lo}" max="${hi}" step="1" value="${r.edit}" aria-label="Price">
-    <div class="flowtrack"><div class="lz" style="width:${pc(econ(0,r.x).breakEven)}%"></div><div class="bz" style="left:${pc(400*r.m)}%;width:${pc(480*r.m)-pc(400*r.m)}%"></div></div>
-    <div class="scale"><span style="left:${pc(fl)}%;color:var(--sd)">safe ${inr(fl)}</span><span style="left:${pc(r.rec)}%;top:15px;color:#3949AB">Meesho ${inr(r.rec)}</span></div>
-    <div class="settle" style="font-size:11.5px">Red = you lose money · Purple = most buyers buy here</div>
+    <div class="bandbar pop-band" id="pop-band"></div>
+    <div class="settle" style="font-size:12px">Lowest safe price <b class="num" style="color:var(--sd)">${inr(fl)}</b> · below <b class="num" style="color:var(--loss)">${inr(econ(0,r.x).breakEven)}</b> you lose money</div>
     <div class="settle" id="pop-settle"></div><div class="msg" id="pop-msg"></div>
     <div class="row2"><button class="btn ghost" id="pop-cancel">Cancel</button><button class="btn ghost" id="pop-ok">Update</button></div></div>`;}
 function updPop(r){const e=econ(r.edit,r.x),fl=e.floor,be=e.breakEven,m=r.m;
+  $('pop-band').innerHTML=bandBar(r.edit,fl,m,r.rec,be,{range:popRange(r),short:true,sugLabel:'Meesho',sugCls:'mee',youLabel:''});
   $('pop-val').textContent=inr(r.edit);$('pop-settle').textContent='Transfer Price: '+inr(settle(r.edit,r.x));
   const msg=$('pop-msg');
-  if(r.edit<be){msg.className='msg bad';msg.innerHTML=`<b>✗ Too low.</b> You lose ${amt(e.contribKept)} on every order.`;}
-  else if(r.edit<fl){msg.className='msg meh';msg.innerHTML=`<b>! Low.</b> You earn only ${inr(e.contribKept)} per order. You wanted ₹${r.x.target}.`;}
-  else if(r.edit<=480*m){msg.className='msg good';msg.innerHTML=`<b>✓ Good price.</b> You earn ${inr(e.contribKept)} per order.`;}
-  else {msg.className='msg meh';msg.innerHTML=`<b>! High.</b> You earn ${inr(e.contribKept)} per order, but fewer people buy at this price.`;}
+  const w=compWarn(r.edit,compPrices(D(),r));
+  if(r.edit<fl){msg.className='msg bad';msg.innerHTML=`<b>✗ Too low.</b> You lose ${amt(e.contribKept)} on every order.`;}
+  else if(w){msg.className='msg meh';msg.innerHTML=`<b>! You earn ${inr(e.contribKept)} per order,</b> but ${w.txt.charAt(0).toLowerCase()+w.txt.slice(1)}`;}
+  else {msg.className='msg good';msg.innerHTML=`<b>✓ Good price.</b> You earn ${inr(e.contribKept)} per order, and no similar listing is cheaper.`;}
 }
 
 
@@ -945,7 +959,7 @@ function updPop(r){const e=econ(r.edit,r.x),fl=e.floor,be=e.breakEven,m=r.m;
 /* Meesho today: account health cards, rating trend, top return reasons with tips (grey/white).
    Sahi Daam adds (teal): what returns cost in rupees, "fix this reason" what-if, returns slider, profit chart. */
 const QX={
- rekha:{periods:{'7':{ret:23.4,orders:58},'30':{ret:20.73,orders:236},'90':{ret:19.4,orders:655}},
+ rekha:{periods:{'7':{ret:19.8,orders:58},'30':{ret:15/85*100,orders:236},'90':{ret:16.9,orders:655}},
    trend:[4.2,4.1,4.1,4.0,4.0,3.9,3.9,3.8,3.9,3.9,3.8,3.9],cancel:1.4,dispatch:97,lqs:68,lqsWhy:'Main photo colour does not match the real kurti',
    hi:['रंग फ़ोटो से अलग','साइज़ सही पर ढीला','कपड़ा उम्मीद जैसा नहीं','दाग़ या गंदा निकला'],
    fix:[['Replace main photo','New daylight photo uploaded.'],['Add real measurements','Size chart updated with real garment measurements.'],['Add fabric close-up','Fabric close-up photo added.'],['Add a check before packing','Check-before-packing step added.']]},
@@ -957,9 +971,38 @@ const QX={
 const Q_COL=['#C2185B','#EF6C00','#6A1B9A','#1565C0'],Q_OTHER='#CDD1DB';
 const pct=v=>(Math.round(v*10)/10).toString().replace(/\.0$/,'')+'%';
 function qState(S){return S.q||(S.q={period:'30',sel:0,slide:null});}
-function qCalc(S){
-  const Q=S.quality,X=QX[S.key],st=qState(S),per=X.periods[st.period];
-  const now={...S.base,...Q.now,ret:per.ret},p=S.cat.price,m=S.cat.m||1,r0=+Q.rating;
+/* Return data for the other catalogs in Price Recommendation (simulated, like everything else) */
+const RQ={
+ q2:{ret:16,cat:18,rating:'4.1',reasons:[['Size too small',22,'Add bust and length in inches to the size chart'],['Colour faded after wash',14,'Add “wash separately in cold water” to the description'],['Print looks different from image',11,'Show the print in daylight, with a close-up'],['Stitching came open',6,'Check every seam before packing']],
+   fix:[['Update size chart','Size chart updated with real measurements.'],['Add wash-care note','Wash-care note added to the listing.'],['Add print close-up','Print close-up photo added.'],['Add a seam check','Seam check added before packing.']]},
+ q3:{ret:24,cat:20,rating:'3.8',reasons:[['Embroidery not as shown',30,'Show the real embroidery up close, not a stock photo'],['Fabric too thin / see-through',18,'Say clearly if a lining is needed'],['Size correct but too loose',12,'Add real garment measurements'],['Threads pulled on arrival',7,'Fold with tissue paper to protect the work']],
+   fix:[['Add embroidery close-up','Real embroidery close-up added.'],['Add lining note','Lining note added to the listing.'],['Add real measurements','Size chart updated with real garment measurements.'],['Pack with tissue paper','Tissue-paper packing added.']]},
+ e2:{ret:13,cat:11,rating:'3.9',reasons:[['Not charging',28,'Test the charging port before packing'],['One side not working',20,'Play test audio on both sides'],['Band or wire broke',10,'Pack in a hard box'],['Different colour received',5,'Match the colour to the order']],
+   fix:[['Add charging test','Charging test added before dispatch.'],['Add sound test','Two-side sound test added before dispatch.'],['Use a hard box','Hard-box packing added.'],['Add a colour check','Colour check added before packing.']]},
+ e3:{ret:9,cat:8,rating:'4.0',reasons:[['Not fast charging my phone',30,'List the phones it fast-charges and the real wattage'],['Gets too hot',14,'Say the normal heat level in the listing'],['Cable missing',9,'Check the box contents before packing'],['Damaged in transit',6,'Use a stronger box']],
+   fix:[['List supported phones','Supported phones and wattage added.'],['Add heat note','Heat note added to the listing.'],['Add a box-contents check','Box-contents check added.'],['Use a stronger box','Stronger box added.']]},
+ e4:{ret:18,cat:14,rating:'3.7',reasons:[['Not pairing with phone',27,'List the phones and the app it works with'],['Battery drains fast',18,'Give real battery hours, not the best case'],['Strap broke',10,'Check the strap pins before packing'],['Screen scratched',8,'Add a screen guard before packing']],
+   fix:[['List supported phones','Supported phones and app added.'],['Show real battery hours','Battery hours corrected.'],['Add a strap check','Strap check added before packing.'],['Add screen guard','Screen guard added before packing.']]}
+};
+// each catalog's own return rate also feeds its row in the price table, so both show the same lowest safe price
+Object.values(SELLERS).forEach(S=>S.rows.forEach(r=>{if(RQ[r.id])r.x={...r.x,ret:RQ[r.id].ret};}));
+const RQX={
+ q2:{orders:182,trend:[4.0,4.0,4.1,4.1,4.0,4.1,4.2,4.1,4.1,4.2,4.1,4.1],lqs:81,lqsWhy:'Size chart has measurements in inches',cancel:1.1,dispatch:98,hi:['साइज़ छोटा निकला','धोने पर रंग उतरा','प्रिंट फ़ोटो से अलग','सिलाई खुल गई']},
+ q3:{orders:64,trend:[4.1,4.0,4.0,3.9,3.9,3.8,3.8,3.9,3.8,3.7,3.8,3.8],lqs:62,lqsWhy:'Embroidery photo is a stock image',cancel:2.6,dispatch:93,hi:['कढ़ाई फ़ोटो जैसी नहीं','कपड़ा बहुत पतला','साइज़ सही पर ढीला','धागे खिंचे हुए आए']},
+ e2:{orders:96,trend:[4.0,4.0,3.9,3.9,4.0,3.9,3.9,3.8,3.9,3.9,3.9,3.9],lqs:77,lqsWhy:'Battery hours are listed clearly',cancel:0.9,dispatch:99,hi:['चार्ज नहीं हो रहा','एक तरफ़ आवाज़ नहीं','बैंड या तार टूटा','दूसरा रंग आया']},
+ e3:{orders:143,trend:[4.1,4.1,4.0,4.0,4.1,4.0,4.0,4.0,4.1,4.0,4.0,4.0],lqs:72,lqsWhy:'Supported phones are not listed',cancel:0.6,dispatch:99,hi:['फ़ोन फ़ास्ट चार्ज नहीं हुआ','बहुत गर्म होता है','केबल नहीं थी','रास्ते में टूट गया']},
+ e4:{orders:41,trend:[4.0,3.9,3.9,3.8,3.8,3.8,3.7,3.7,3.6,3.7,3.7,3.7],lqs:64,lqsWhy:'Battery hours look higher than real',cancel:2.2,dispatch:96,hi:['फ़ोन से कनेक्ट नहीं हुआ','बैटरी जल्दी ख़त्म','स्ट्रैप टूट गया','स्क्रीन पर खरोंच']}
+};
+function qCalc(S,price,row){
+  let Q=S.quality,X=QX[S.key],st=qState(S),base=S.base,m=S.cat.m||1;
+  if(row&&row.id!==S.rows[0].id&&RQ[row.id]){const d=RQ[row.id];
+    Q={catalog:row.name,rating:d.rating,now:{},catNorm:{ret:d.cat},reasons:d.reasons};
+    const e=RQX[row.id]||{};
+    X={fix:d.fix,trend:e.trend,lqs:e.lqs,lqsWhy:e.lqsWhy,cancel:e.cancel,dispatch:e.dispatch,hi:e.hi,
+       periods:{'7':{ret:+(d.ret*1.1).toFixed(1),orders:Math.round((e.orders||100)/4)},'30':{ret:d.ret,orders:e.orders||100},'90':{ret:+(d.ret*0.95).toFixed(1),orders:Math.round((e.orders||100)*2.8)}}};
+    st=row.qs||(row.qs={period:'30',sel:0,slide:null});base=row.x;m=row.m||1;}
+  const per=X.periods[st.period];
+  const now={...base,...Q.now,ret:per.ret},p=price||S.cat.price,r0=+Q.rating;
   const top=Math.max(...Q.reasons.map(r=>r[1])),share=Q.reasons[st.sel][1];
   const scen=(label,ret,rating)=>{const x={...now,ret},e=econ(p,x),orders=ordersPer1k(p,m)*(1+0.4*(rating-4.0));
     return {label,ret,rating,safe:e.floor,earn:e.contribKept,orders,p1k:orders*e.contribDisp};};
@@ -1006,7 +1049,7 @@ function curveSVG(c,slideRet){
   const sv=econ(c.p,{...c.now,ret:slideRet}).contribKept;
   return `<svg viewBox="0 0 ${W} ${H}" class="qchart" role="img" aria-label="Money you earn per order at each return rate">
    <rect x="${l}" y="${Y(0)}" width="${W-l-rr}" height="${Math.max(0,Y(lo)-Y(0))}" fill="#FDECEA"/>
-   <line x1="${l}" x2="${W-rr}" y1="${Y(0)}" y2="${Y(0)}" stroke="#C62828"/><text x="${W-rr-4}" y="${Y(0)+14}" text-anchor="end" style="font:11px var(--font);fill:#C62828">below this line you lose money</text>
+   <line x1="${l}" x2="${W-rr}" y1="${Y(0)}" y2="${Y(0)}" stroke="#C62828"/><text x="${W-rr-4}" y="${Y(0)+14>H-b-2?Y(0)-6:Y(0)+14}" text-anchor="end" style="font:11px var(--font);fill:#C62828">below this line you lose money</text>
    ${tgt?`<line x1="${l}" x2="${W-rr}" y1="${Y(tgt)}" y2="${Y(tgt)}" stroke="#2E7D32" stroke-dasharray="4 4"/><text x="${W-rr-4}" y="${Y(tgt)-5}" text-anchor="end" style="font:11px var(--font);fill:#2E7D32">your ₹${tgt} target</text>`:''}
    ${[hi,0,lo].filter((v,i,a)=>a.indexOf(v)===i).map(v=>`<text x="${l-6}" y="${Y(v)+4}" text-anchor="end" style="font:11px var(--mono);fill:var(--muted)">${inr(v)}</text>`).join('')}
    ${[0,10,20,30,40,50].filter(r=>r<=maxR).map(r=>`<text x="${X(r)}" y="${H-12}" text-anchor="middle" style="font:11px var(--mono);fill:var(--muted)">${r}%</text>`).join('')}
@@ -1030,15 +1073,60 @@ function qSlideOut(S,c){
     <div><div class="lbl">At your price ${inr(c.p)}</div><div class="pill ${v.c}" style="margin-top:4px;white-space:normal">${v.t}</div><div class="muted sm">${vh.t}</div></div>
     <div><div class="lbl">Compared to today</div><div class="num big" style="color:${d>=0?'var(--gain)':'var(--loss)'}">${d>=0?'+':'−'}${amt(d)}</div><div class="muted sm">per order</div></div>`;
 }
+/* Moved from the Quality Dashboard: what returns cost, fix-a-reason what-if, returns slider (shown under the main catalog in Price Recommendation) */
+function returnsBoxHTML(S,c,noChips){
+  const {Q,X,st,now,p,T,F,C}=c,tgt=now.target||0,R=Q.reasons[st.sel],fx=X.fix[st.sel];
+  const vT=earnLine(T.earn,tgt),vF=earnLine(F.earn,tgt),sMin=3,sMax=Math.round(now.ret+12),sVal=st.slide??now.ret;
+  return `  <div class="sd-box" style="margin-top:14px">
+    <span class="sd-badge">Sahi Daam · What returns cost you · ${esc(Q.catalog)}</span>
+    <div class="hi-sub">रिटर्न से आपका कितना पैसा जाता है</div>
+    <div class="qbig">
+      <div><div class="lbl">Returns take away</div><div class="num big" style="color:var(--loss)">${inr(c.retCost)}</div><div class="muted sm">from every order you sell (return charges and pieces you can’t sell again)</div></div>
+      <div><div class="lbl">Lowest safe price now</div><div class="num big">${inr(T.safe)}</div><div class="muted sm">with ${pct(Q.catNorm.ret)} returns like others: ${inr(C.safe)}</div></div>
+      <div><div class="lbl">At your price ${inr(p)}</div><div class="pill ${vT.c}" style="margin-top:6px;white-space:normal">${vT.t}</div><div class="muted sm">${earnLine(T.earn,tgt,true).t}</div></div>
+    </div>
+
+    <div class="qfix">
+      ${noChips?'':`<div class="lbl">Pick a return reason to fix</div>
+      <div class="qchips">${Q.reasons.map((x,i)=>`<button data-qr="${i}" aria-pressed="${i===c.st.sel}">${esc(x[0])} <b class="num">${x[1]}%</b></button>`).join('')}</div>`}
+      <div class="lbl" style="margin-top:${noChips?0:10}px">If you fix “${esc(R[0])}”</div>
+      <div class="qfixrow">
+        <div><span class="muted sm">Returns</span><div class="num">${pct(now.ret)} → <b style="color:var(--gain)">${pct(F.ret)}</b></div></div>
+        <div><span class="muted sm">Lowest safe price</span><div class="num">${inr(T.safe)} → <b style="color:var(--gain)">${inr(F.safe)}</b></div></div>
+        <div><span class="muted sm">You earn per order</span><div class="num">${inr(T.earn)} → <b style="color:var(--gain)">${inr(F.earn)}</b></div></div>
+        <div><span class="muted sm">Rating (our guess)</span><div class="num">${c.r0.toFixed(1)}★ → <b style="color:var(--gain)">${F.rating.toFixed(1)}★</b></div></div>
+      </div>
+      <div style="margin-top:8px">${F.earn>T.earn?`You keep <b class="num">${inr(F.earn-T.earn)}</b> more on every order, <b>without changing your price</b>.`:''} <span class="pill ${vF.c}" style="white-space:normal">${vF.t}</span></div>
+      <div class="sd-actions"><button class="btn sd" id="q-fix">${esc(fx[0])}</button><span class="muted" style="font-size:12.5px">Sahi Daam watches returns for 14 days before it suggests any price change.</span></div>
+    </div>
+
+    <div class="qslide">
+      <div class="lbl">Try it: if your returns become <b id="q-slide-v" class="num" style="color:var(--sd);font-size:15px"></b></div>
+      <div class="hi-sub">अगर रिटर्न कम-ज़्यादा हों तो क्या होगा, स्लाइडर खिसकाकर देखें</div>
+      <input type="range" id="q-slide" min="${sMin}" max="${sMax}" step="0.5" value="${sVal}" aria-label="Return rate">
+      <div class="qscale num"><span>${sMin}%</span><span>${sMax}%</span></div>
+      <div class="qbig" id="q-slide-out"></div>
+      <div id="q-curve" style="margin-top:8px;max-width:640px"></div>
+      <div class="muted sm">Teal line: what you earn per order at ${inr(p)} for each return rate. Red dot = you now, grey dot = other sellers.</div>
+    </div>
+  </div>`;
+}
+function bindReturns(S,c,redraw){
+  const st=c.st,fx=c.X.fix[st.sel];
+  document.querySelectorAll('[data-qr]').forEach(b=>b.onclick=()=>{st.sel=+b.dataset.qr;redraw();});
+  $('q-fix').onclick=()=>toast(fx[1]+' Watching returns for 14 days.');
+  $('q-slide').oninput=ev=>{st.slide=+ev.target.value;qSlideOut(S,c);};
+  qSlideOut(S,c);
+}
 function renderQuality(sc){
-  const S=D(),c=qCalc(S),{Q,X,st,per,now,p,T,F,C}=c,tgt=now.target||0;
+  const S=D(),qrow=S.rows.find(r=>r.id===S.qsel)||S.rows[0],c=qCalc(S,qrow.cur,qrow),{Q,X,st,per,now,p,T,F,C}=c,tgt=now.target||0;
   const retPill=now.ret<=Q.catNorm.ret?['ok','Normal']:now.ret<=Q.catNorm.ret+5?['watch','Higher than others']:['loss','Too high'];
   const items=Q.reasons.map((r,i)=>({i,v:r[1],c:Q_COL[i],label:r[0]})).concat(c.other?[{i:null,v:c.other,c:Q_OTHER,label:'Other reasons'}]:[]);
   const R=Q.reasons[st.sel],fx=X.fix[st.sel],showN={'7':2,'30':4,'90':12}[st.period];
   const vT=earnLine(T.earn,tgt),vF=earnLine(F.earn,tgt);
   const sMin=3,sMax=Math.round(now.ret+12),sVal=st.slide??now.ret;
   sc.innerHTML=`
-  <div class="qhead"><div><b>${esc(Q.catalog)}</b> <span class="muted">· ${per.orders} orders delivered in this period</span></div>
+  <div class="qhead"><div class="qcatsel"><label for="q-cat" class="muted sm">Catalog</label><select id="q-cat">${S.rows.map(r=>`<option value="${r.id}" ${r.id===qrow.id?'selected':''}>${esc(r.name)}</option>`).join('')}</select><span class="muted">· ${per.orders} orders delivered in this period</span></div>
     <div class="qseg" role="group" aria-label="Period">${['7','30','90'].map(k=>`<button data-per="${k}" aria-pressed="${st.period===k}">Last ${k} days</button>`).join('')}</div></div>
 
   <div class="qcards">
@@ -1059,40 +1147,10 @@ function renderQuality(sc){
     </div>
   </div>
 
-  <div class="sd-box" style="margin-top:14px">
-    <span class="sd-badge">Sahi Daam · What returns cost you</span>
-    <div class="hi-sub">रिटर्न से आपका कितना पैसा जाता है</div>
-    <div class="qbig">
-      <div><div class="lbl">Returns take away</div><div class="num big" style="color:var(--loss)">${inr(c.retCost)}</div><div class="muted sm">from every order you sell (return charges and pieces you can’t sell again)</div></div>
-      <div><div class="lbl">Lowest safe price now</div><div class="num big">${inr(T.safe)}</div><div class="muted sm">with ${pct(Q.catNorm.ret)} returns like others: ${inr(C.safe)}</div></div>
-      <div><div class="lbl">At your price ${inr(p)}</div><div class="pill ${vT.c}" style="margin-top:6px;white-space:normal">${vT.t}</div><div class="muted sm">${earnLine(T.earn,tgt,true).t}</div></div>
-    </div>
-
-    <div class="qfix">
-      <div class="lbl">If you fix “${esc(R[0])}”</div>
-      <div class="qfixrow">
-        <div><span class="muted sm">Returns</span><div class="num">${pct(now.ret)} → <b style="color:var(--gain)">${pct(F.ret)}</b></div></div>
-        <div><span class="muted sm">Lowest safe price</span><div class="num">${inr(T.safe)} → <b style="color:var(--gain)">${inr(F.safe)}</b></div></div>
-        <div><span class="muted sm">You earn per order</span><div class="num">${inr(T.earn)} → <b style="color:var(--gain)">${inr(F.earn)}</b></div></div>
-        <div><span class="muted sm">Rating (our guess)</span><div class="num">${c.r0.toFixed(1)}★ → <b style="color:var(--gain)">${F.rating.toFixed(1)}★</b></div></div>
-      </div>
-      <div style="margin-top:8px">${F.earn>T.earn?`You keep <b class="num">${inr(F.earn-T.earn)}</b> more on every order, <b>without changing your price</b>.`:''} <span class="pill ${vF.c}" style="white-space:normal">${vF.t}</span></div>
-      <div class="sd-actions"><button class="btn sd" id="q-fix">${esc(fx[0])}</button><span class="muted" style="font-size:12.5px">Sahi Daam watches returns for 14 days before it suggests any price change.</span></div>
-    </div>
-
-    <div class="qslide">
-      <div class="lbl">Try it: if your returns become <b id="q-slide-v" class="num" style="color:var(--sd);font-size:15px"></b></div>
-      <div class="hi-sub">अगर रिटर्न कम-ज़्यादा हों तो क्या होगा, स्लाइडर खिसकाकर देखें</div>
-      <input type="range" id="q-slide" min="${sMin}" max="${sMax}" step="0.5" value="${sVal}" aria-label="Return rate">
-      <div class="qscale num"><span>${sMin}%</span><span>${sMax}%</span></div>
-      <div class="qbig" id="q-slide-out"></div>
-      <div id="q-curve" style="margin-top:8px;max-width:640px"></div>
-      <div class="muted sm">Teal line: what you earn per order at ${inr(p)} for each return rate. Red dot = you now, grey dot = other sellers.</div>
-    </div>
-  </div>
+  ${returnsBoxHTML(S,c,true)}
 
   <div class="mp">
-    <h4>How quality changes your profit<span class="mtag">Mentor feedback</span></h4>
+    <h4>How quality changes your profit</h4>
     <div class="sub">Better quality brings fewer returns and a better rating, so more people buy. Money from every 1,000 people who see your product, at ${inr(p)}:</div>
     ${barsHTML([T,F,C])}
     <div class="mtw" style="margin-top:10px"><table class="mt"><thead><tr><th></th><th class="n">Returns</th><th class="n">Rating</th><th class="n">Lowest safe price</th><th class="n">You earn per order</th><th class="n">Orders from 1,000 viewers</th></tr></thead><tbody>
@@ -1103,9 +1161,8 @@ function renderQuality(sc){
 
   sc.querySelectorAll('[data-per]').forEach(b=>b.onclick=()=>{st.period=b.dataset.per;st.slide=null;renderQuality(sc);});
   sc.querySelectorAll('[data-qi]').forEach(el=>{const go=()=>{st.sel=+el.dataset.qi;renderQuality(sc);};el.onclick=go;el.onkeydown=ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();go();}};});
-  $('q-fix').onclick=()=>toast(fx[1]+' Watching returns for 14 days.');
-  $('q-slide').oninput=ev=>{st.slide=+ev.target.value;qSlideOut(S,c);};
-  qSlideOut(S,c);
+  bindReturns(S,c,()=>renderQuality(sc));
+  $('q-cat').onchange=e=>{S.qsel=e.target.value;renderQuality(sc);};
 }
 
 /* ================= AUTOPILOT ================= */
@@ -1121,8 +1178,8 @@ const EV_NAME={rekha:['Listing day','First returns','People look, few buy','Retu
   imran:['Listing day','Orders without ads','Rivals cut price','More returns','Festival week']};
 function plainWhy(S,i){const x=evX(i);
   if(S.key==='rekha')return [
-   `${atPrice(320,x)} Kurtis like yours sell most between ₹400 and ₹480. Sahi Daam suggests starting at ₹${R_LAUNCH}: lowering a price later is easy, raising it is hard. Without GST you can’t run ads, so the price has to do the work.`,
-   'More of your parcels come back than for similar kurtis (35 vs 30 out of 100). The main reason is the photo colour, so the fix is a new photo, not a lower price.',
+   `${atPrice(140,x)} Kurtis like yours sell most between ${RBL} and ${RBH}. Sahi Daam suggests starting at ₹${R_LAUNCH}: lowering a price later is easy, raising it is hard. Without GST you can’t run ads, so the price has to do the work.`,
+   'More of your parcels come back than for similar kurtis (30 vs 26 out of 100). The main reason is the photo colour, so the fix is a new photo, not a lower price.',
    `People see your kurti, but few buy. Sahi Daam tries ₹${R_TEST} for 7 days and keeps it only if you make more money from every 1,000 people who see it.`,
    'Meesho’s return fee went up. Sahi Daam re-checks your lowest safe price by itself, so a cost change never becomes a hidden loss.'][i];
   return [
@@ -1142,7 +1199,7 @@ function signals(i){
   return [
    ['People who saw your product',m.views===null?'new listing':(m.views>0?'+':'−')+Math.abs(m.views)+'% vs last week','drops by more than 30% in a week',m.views===null?NA:(m.views<=-30&&!m.season)?A:m.views<=-15?W:OK],
    ['Of those, how many bought',m.vo===null?'no data yet':m.vo+'% of similar products','below 60% of similar products for 7 days',m.vo===null?NA:m.vo<60?A:m.vo<80?W:OK],
-   ['Money you keep per order',inr(e.contribKept),`below ₹0, or below your ₹${x.target} goal`,e.contribKept<0?A:e.contribKept<x.target?W:OK],
+   ['Profit per order (price − lowest safe price)',inr(e.contribKept),'below ₹0',e.contribKept<0?A:OK],
    ['Parcels that came back (out of 100)',m.fail===null?'no data yet':Math.round(m.fail)+' '+vs,'5 or more above normal',m.fail===null?NA:(m.fail-m.avg>=5)?A:(m.fail-m.avg>3)?W:OK],
    ['Is your price normal for this product?',pos<25?'cheaper than most':pos>75?'costlier than most':'in the normal range','cheaper or costlier than most sellers',(pos<25||pos>75)?W:OK],
    ['Your costs (shipping, fees, tax)',m.costNew||'no change','any cost changes',m.costNew?P('watch','↻ Re-checked'):OK]
@@ -1155,9 +1212,6 @@ function renderAutopilot(sc){
     <div class="hi-sub">आपका दाम, आपकी शर्तों पर · हफ़्ते में ज़्यादा से ज़्यादा एक WhatsApp</div>
     <div class="muted sm" style="margin-top:2px">Meesho already sends order alerts on WhatsApp. Sahi Daam adds one pricing tip a week. Set your rules here:</div>
     <div class="aprules">
-      <div class="rc"><div class="lbl">Keep on every order</div><div class="num big" id="ap-tg-v">₹${tg}</div>
-        <div class="ctl"><input type="range" id="ap-tg" min="0" max="60" step="5" value="${tg}" aria-label="Money to keep per order"></div>
-        <div class="muted sm">हर ऑर्डर पर कितना बचाना है</div></div>
       <div class="rc"><div class="lbl">Lowest safe price</div><div class="num big" id="ap-fl">${inr(fl)}</div>
         <div class="ctl"><span class="pill ok">Worked out for you</span></div>
         <div class="muted sm">Never goes below this. Updates when your costs change.</div></div>
@@ -1194,7 +1248,6 @@ function renderAutopilot(sc){
   </div>`;
   $('l-en').onclick=()=>{lang='en';renderAutopilot(sc);};$('l-hi').onclick=()=>{lang='hi';renderAutopilot(sc);};
   $('ap-next').onclick=()=>{const a=D().ap,n=D().events.length;if(a.cur<a.reached)a.cur++;else if(a.accepted[a.reached]&&a.reached<n-1){a.reached++;a.cur=a.reached;}drawAP();};
-  $('ap-tg').oninput=ev=>{A.target=+ev.target.value;$('ap-tg-v').textContent='₹'+A.target;$('ap-fl').textContent=inr(econ(0,apBase(S)).floor);drawAP();};
   $('ap-ce').oninput=ev=>{S.ceiling=+ev.target.value;$('ap-ce-v').textContent='₹'+S.ceiling;drawAP();};
   sc.querySelectorAll('[data-mode]').forEach(bn=>bn.onclick=()=>{A.auto=bn.dataset.mode==='auto';toast(A.auto?'Autopilot will change prices inside your range and tell you.':'Autopilot will ask you before every change.');renderAutopilot(sc);});
   drawAP();
@@ -1252,7 +1305,7 @@ function renderPH(s){
     <p class="muted" style="font-size:13px">This screen is not built in the prototype.</p></div>`;
 }
 function renderAbout(sc){
-  sc.innerHTML=`<div class="card" style="margin-bottom:14px;border-color:#CFC3EE"><h2>Mentor feedback (1 Oct) and where it is in the prototype</h2><ul class="clean">
+  sc.innerHTML=`<div class="card" style="margin-bottom:14px;border-color:#CFC3EE"><h2>What changed after review, and where it is in the prototype</h2><ul class="clean">
       <li><b>Forward shipping is not the seller’s cost:</b> the customer pays it on delivered orders. The seller still pays 18% GST on it (deck, slide 5).</li>
       <li><b>RTO:</b> the product always comes back, so only customer returns can be unsellable (about 1 in 10, deck). Shipping on RTO follows the deck: Meesho’s stated policy is no charge.</li>
       <li><b>TDS and TCS:</b> left out of the floor (refundable). GST kept at a small assumed rate.</li>
@@ -1269,7 +1322,7 @@ function renderAbout(sc){
       <li>Meesho’s Price Recommendation already shows the Transfer Price (what reaches the bank). Sahi Daam adds the missing third number: earning per kept order.</li>
       <li>Price Recommendation already has a slider that says “competitive”. We add the floor to that same slider.</li>
       <li>Quality Dashboard already shows rating, return rate and top return reasons with tips. We add what returns cost in rupees, a “fix this reason” what-if, a returns slider and a profit chart.</li></ul></div>
-    <div class="card"><h2>Still to confirm with the mentor</h2><ul class="clean">
+    <div class="card"><h2>Still to confirm</h2><ul class="clean">
       <li>Exact shipping per weight slab, and what else is in the settlement deduction (the tutorial shows about ₹90–100 between price and settlement).</li>
       <li>Is GST included in Meesho Price or added on top?</li>
       <li>Can a prototype read real cluster order data, or should it stay simulated?</li></ul></div>

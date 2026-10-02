@@ -11,7 +11,7 @@ a **profit floor**, a **demand-weighted price band**, and an **autopilot** that 
 > Concept prototype. Not an official Meesho product. All seller, market and rate data is simulated. Teal = what Sahi Daam adds to the Supplier Panel.
 
 ## Demo sellers (from our research)
-- **Rekha**, 47, Kanpur: kurti seller, not GST registered (no ads, sells within her state). Priced from her shop, then went below it.
+- **Rekha**, 47, Kanpur: kurti seller, not GST registered (no ads, sells within her state). Priced from her shop (₹350), then went below it (₹320) and loses ₹8 an order without knowing it.
 - **Imran**, 32, Kanpur: electronics seller, GST registered, runs Meesho Ads. Ads eat his margin and rivals undercut him weekly.
 
 ## 2-minute demo path
@@ -20,25 +20,20 @@ a **profit floor**, a **demand-weighted price band**, and an **autopilot** that 
 3. **Quality Dashboard**: Meesho’s account health cards, rating trend and return-reasons pie (tap a reason). Teal: what returns cost per order, “if you fix this reason” numbers, a returns slider with a profit chart, and profit per 1,000 viewers.
 4. **Sahi Daam Autopilot**: set your rules (money to keep per order, highest price, ask first or do it for me), then tap the green WhatsApp buttons through each seller's journey (EN / हिं).
 
-## How the floor is computed
-Deck formula:
-
+## How the numbers are computed (as in the deck, slide 6)
 **Floor = (Product cost + Packaging + Shipping + GST on shipping + Ad spend + Target profit) ÷ parcels that stay sold**
 
-- Out of 100 parcels dispatched, the ones that stay sold = delivered − customer returns (e.g. 100 → 82 → 65).
-- Product cost counts every piece sold plus customer returns that can't be resold. RTO parcels always come back to the seller (mentor).
-- Shipping = return shipping on customer returns + forward and return shipping on RTO parcels (mentor: RTO is not free). Forward shipping on delivered orders is paid by the customer, so it is not in the floor (mentor).
-- GST on shipping = 18% of that shipping. TDS and TCS are left out because they are refundable (mentor).
-- Ad spend per order = cost per click ÷ share of clicks that buy (₹2 ÷ 5% = ₹40). Not available to non-GST sellers.
-- Target profit is set by the seller per order (₹20 in the demo).
-- GST-registered sellers add their product GST on top.
+Inputs (deck slides 4 and 6): catalogue shipping charge ₹56, paid by the customer; the seller pays **18% GST on it** for every delivered parcel. Return shipping ₹160 per customer return. **No charge on RTO** (Meesho's stated policy). About **1 in 10** returns can't be resold. Packing ₹5 per parcel. Ads = cost per click ÷ conversion (₹2 ÷ 5% = ₹40). TCS and TDS are refunded, so they are left out.
 
-**Break-even** is the same formula with target profit = ₹0: below it, the seller loses money.
+- **Lowest safe price (floor)**, the five-line napkin: (stock that stays sold + packing and GST on shipping paid on every parcel + failure cost: return shipping and damaged returns + ads + target profit) ÷ parcels that stay sold. For GST-registered sellers (Imran, 18%), product GST is added on top.
+- **No-loss price, real profit per order and max return rate** (the three numbers she never sees) follow the slide's P&L: sales and product cost on every delivered order, minus damaged returns, packing, GST on shipping, return shipping, ads and product GST. Max return rate = the rate at which returns and RTO (each per 100 parcels) wipe out the profit.
 
-Worked example, ₹185 cotton kurti: (12,497 + 1,500 + 4,975 + 895 + 0 + 1,300) ÷ 65 = **₹326 floor**; break-even ₹306.
+**Check: the engine reproduces slide 6 exactly** (₹100 kurti listed at ₹140, 15 RTO + 15 returns): napkin ₹7,000 + ₹1,357 + ₹2,550 = ₹10,907 ÷ 70 = **floor ₹155**; P&L ₹11,900 − ₹8,500 − ₹857 − ₹500 − ₹2,400 − ₹150 − ₹567 = **−₹1,073 per 100 orders (−₹10.73 per order)**; **break-even ₹153**; **max return rate 9.4%**.
+
+**Demo sellers:** Rekha's ₹275 kurti listed at ₹320 loses ₹8 per order (no-loss ₹330, lowest safe price ₹364). Imran's ₹385 earbuds listed at ₹549 lose ₹11 per order (no-loss ₹563, lowest safe price ₹606).
 
 ## Mentor feedback built in (1 Oct)
-- **Who bears shipping:** Catalog Upload shows what the customer pays at checkout (price + forward shipping) and what the seller pays (returns and RTO).
+- **Who bears shipping:** Catalog Upload shows what the customer pays at checkout (price + forward shipping) and what the seller pays (return charges and 18% GST on the delivery charge).
 - **Launching at a thin margin:** Catalog Upload lists competitors to check, and ways to lower the floor through cost before raising the price.
 - **Quality and profit:** Quality Dashboard shows how fixing the top return reason changes floor, orders and profit per 1,000 views.
 

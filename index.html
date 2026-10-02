@@ -388,23 +388,26 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 let toastT;function toast(t){let el=document.querySelector('.toast');if(!el){el=document.createElement('div');el.className='toast';document.body.appendChild(el);}el.textContent=t;el.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>el.hidden=true,2600);}
 
 /* ================= ENGINE ================= */
-const SLABS=[{fwd:65,rev:155},{fwd:85,rev:190}];
+const SLABS=[{fwd:56,rev:160},{fwd:80,rev:190}]; // deck slide 5: ₹56 catalogue shipping charge, ₹160 return (GST inside); >500 g slab estimated
 function econ(p,x,units){
-  /* Deck formula: Floor = (Product cost + Packaging + Shipping + GST on shipping + Ad spend + Target profit) ÷ parcels that stay sold */
+  /* Exactly the deck (slide 5).
+     Floor (five-line napkin) = (stock that stays sold + damaged returns + packing on every parcel + 18% GST on the shipping charge
+                                 + return shipping + ads + product GST + target profit) ÷ parcels that stay sold
+     Break-even, real profit per order and max return rate (the three numbers she never sees) count sales and product cost
+     on every DELIVERED order, as the slide's P&L does. */
   units=units||1;
-  const g=x.gst?(x.gstRate||5)/100:0, D=100, SHIP_GST=0.18, tgt=(x.target||0)*units;
+  const g=x.gst?(x.gstRate||5)/100:0, D=100, SHIP_GST=0.18, tgt=(x.target||0)*units, c=x.cost*units;
   const dl=D*(1-x.rto/100), rt=dl*x.ret/100, K=dl-rt, rto=D-dl, fail=D-K;
-  const fwd=0, rev=x.rev*rt;                                  // mentor: customer pays forward shipping on delivered orders
-  const rtoShip=(x.fwd+(x.rtoRet??x.fwd))*rto;               // mentor: seller pays forward + return shipping on RTO
-  // mentor: an RTO parcel always comes back to the seller, so only customer returns can be unsellable
-  const parts={goods:x.cost*units*(K+x.uns/100*rt),pack:x.pack*D,fwd,rev,rtoShip,shipGst:SHIP_GST*(fwd+rev+rtoShip),ads:x.ads*D};
-  const cost=Object.values(parts).reduce((a,b)=>a+b,0);   // real costs on 100 parcels
-  const profit=tgt*K;                                        // target profit on the parcels that stay sold
-  const cpk=cost/K;                                          // cost per kept order
-  const breakEven=Math.ceil(cpk*(1+g));                      // price with ₹0 profit
-  const floor=Math.ceil((cost+profit)/K*(1+g));              // deck floor, includes target profit
-  const pnet=p/(1+g);
-  return {g,dl,rt,K,rto,fail,parts,cost,profit,tgt,cpk,breakEven,floor,pnet,contribKept:pnet-cpk,contribDisp:(K/100)*pnet-cost/100};
+  const parts={goods:c*(K+x.uns/100*rt),pack:x.pack*D,fwd:0,rev:x.rev*rt,rtoShip:(x.rtoFee||0)*rto,shipGst:SHIP_GST*x.fwd*dl,ads:x.ads*D};
+  const other=parts.pack+parts.rev+parts.rtoShip+parts.shipGst+parts.ads;
+  const costDl=c*dl+c*x.uns/100*rt+other;                     // slide 5: 8,500 + 150 + 500 + 857 + 2,400
+  const breakEven=Math.floor(costDl*(1+g)/dl);                 // slide 6: ₹153
+  const pnet=p/(1+g), real=(dl*pnet-costDl)/D;                // slide 6: −₹10.73 per order
+  const gstAmt=dl*p*g/(1+g);                                  // slide 6 P&L: GST paid to government (₹567)
+  const base=parts.goods+other+tgt*K;                          // slide 6 napkin: ₹7,000 + ₹1,357 + ₹2,550 = ₹10,907
+  const floor=Math.floor(base/K*(1+(x.gstRate>=12?g:0)));     // slide 6: ₹10,907 ÷ 70 = ₹155; GST-registered sellers (12%+) add product GST
+  const cost=Object.values(parts).reduce((a,b)=>a+b,0);
+  return {g,dl,rt,K,rto,fail,parts,cost,costDl,gstAmt,profit:tgt*K,tgt,cpk:cost/K,breakEven,floor,pnet,contribKept:real,contribDisp:real};
 }
 const settle=(p,x)=>p/(x.gst?1+(x.gstRate||5)/100:1); // forward shipping is paid by the customer, on top of the price
 const BINS=[[320,360,5],[360,400,11],[400,440,30],[440,480,32],[480,520,13],[520,560,6],[560,600,3]];
@@ -429,10 +432,11 @@ function launchRule(x,m){
   return {kind:'above',price:null,label:'Floor sits above the band',msg:'Don’t solve this with a price. Change the product, packing, pack size or return policy.'};
 }
 /* Deck "three numbers she never sees": highest return rate this price survives */
-function maxReturn(p,x){if(econ(p,{...x,ret:0}).breakEven>p)return null;let lo=0,hi=95;for(let i=0;i<30;i++){const mid=(lo+hi)/2;if(econ(p,{...x,ret:mid}).breakEven<=p)lo=mid;else hi=mid;}return lo;}
+/* deck: the highest failure rate (returns and RTO each at m per 100 parcels) at which this price still doesn't lose money (slide 5: 9.4%) */
+function maxReturn(p,x){const at=m=>econ(p,{...x,rto:m,ret:m/(100-m)*100}).contribKept;if(at(0)<0)return null;let lo=0,hi=49;for(let i=0;i<40;i++){const mid=(lo+hi)/2;if(at(mid)>=0)lo=mid;else hi=mid;}return lo;}
 
-const RB={cost:185,gst:false,gstRate:0,slab:0,fwd:65,rev:155,rto:18,ret:20.73,uns:15,pack:15,ads:0,cpc:0,conv:0,target:20,rtoRet:65};
-const IB={cost:310,gst:true,gstRate:18,slab:0,fwd:65,rev:155,rto:15,ret:15,uns:30,pack:20,ads:40,cpc:2,conv:5,target:20,rtoRet:65};
+const RB={cost:275,gst:false,gstRate:0,slab:0,fwd:56,rev:160,rto:18,ret:20.73,uns:10,pack:5,ads:0,cpc:0,conv:0,target:20,price:320};
+const IB={cost:385,gst:true,gstRate:18,slab:0,fwd:56,rev:160,rto:15,ret:15,uns:10,pack:5,ads:40,cpc:2,conv:5,target:20,price:549};
 const SELLERS={
  rekha:{key:'rekha',name:'Rekha Fashions',owner:'Rekha',av:'RF',color:'#7C4DAB',sub:'Kanpur · Kurtis',noun:'kurtis',
   facts:['Not GST registered','Age 47 · Kanpur','Kurti shop + Meesho','Lifecycle: Launch → Learn'],
@@ -485,7 +489,7 @@ SELLERS.rekha.events=[
   rule:'Signal 4 fires: failure rate is more than 5 points above the category. Symptom → action: fix the cause before touching price. A daylight photo is cheaper than a price cut.'},
  {d:'Day 30',date:'12 Oct',name:'Clicks, few orders',stage:'LEARN',x:{},price:R_LAUNCH,after:R_KEEP,what:'52 reviews at 4.0★. Views are normal, but orders are only 55% of similar kurtis.',m:{views:5,vo:55,fail:31,avg:33},
   rule:`Signal 2 fires. Symptom → action: “Clicks but no orders → step down 5–8%. No lift means price was never the issue.” Autopilot tests ₹${R_TEST} for 7 days and keeps it only if earnings per 1,000 views rise.`},
- {d:'Day 45',date:'27 Oct',name:'Costs change',stage:'LEARN',x:{fwd:70},price:R_KEEP,after:R_KEEP,what:'Forward shipping is revised from ₹65 to ₹70. Her price hasn’t changed since the test.',m:{views:3,vo:84,fail:31,avg:32,costNew:'shipping ₹65 → ₹70'},
+ {d:'Day 45',date:'27 Oct',name:'Costs change',stage:'LEARN',x:{rev:175},price:R_KEEP,after:R_KEEP,what:'Meesho revises the return fee from ₹160 to ₹175. Her price hasn’t changed since the test.',m:{views:3,vo:84,fail:31,avg:32,costNew:'return fee ₹160 → ₹175'},
   rule:'Signal 6 fires: a cost input changed. Rule: recompute every floor automatically, so “set it and forget it” can’t turn into a silent loss.'}];
 SELLERS.rekha.T=function(i,x,fl){
   if(i===0){const loss=amt(econ(320,x).contribKept),ins=R_RULE.kind!=='below';
@@ -498,7 +502,7 @@ SELLERS.rekha.T=function(i,x,fl){
     reply:kept?{en:`Test done. Orders rose ${up}% and you earned ${inr(d)} more for every 1,000 people who saw it, so ₹${R_TEST} stays.`,hi:`टेस्ट पूरा। ऑर्डर ${up}% बढ़े और हर 1,000 देखने वालों पर ${inr(d)} ज़्यादा कमाई हुई, इसलिए ₹${R_TEST} ही रहेगा।`}
               :{en:`Test done. Orders rose ${up}%, but you earned ${amt(d)} less for every 1,000 people who saw it. Price was not the problem, so we are back at ₹${R_LAUNCH}.`,hi:`टेस्ट पूरा। ऑर्डर ${up}% बढ़े, पर हर 1,000 देखने वालों पर ${amt(d)} कम कमाई हुई। दाम वजह नहीं था, इसलिए वापस ₹${R_LAUNCH} कर दिया।`}};}
   const old=econ(0,RB).floor,earn=inr(econ(R_KEEP,x).contribKept);
-  return{en:[['warn',`Shipping charges changed. Your lowest safe price moved from ${inr(old)} to ${inr(fl)}.`],['',`₹${R_KEEP} still earns you ${earn} per order. No change needed.`]],hi:[['warn',`शिपिंग चार्ज बदल गए हैं। आपका सबसे कम सुरक्षित दाम ${inr(old)} से ${inr(fl)} हो गया है।`],['',`₹${R_KEEP} पर अब भी हर ऑर्डर पर ${earn} कमाई है। कुछ बदलने की ज़रूरत नहीं।`]],cta:{en:'OK',hi:'ठीक है'},reply:{en:'Got it.',hi:'ठीक है।'}};
+  return{en:[['warn',`Return charges went up. Your lowest safe price moved from ${inr(old)} to ${inr(fl)}.`],['',`₹${R_KEEP} still earns you ${earn} per order. No change needed.`]],hi:[['warn',`रिटर्न चार्ज बढ़ गए हैं। आपका सबसे कम सुरक्षित दाम ${inr(old)} से ${inr(fl)} हो गया है।`],['',`₹${R_KEEP} पर अब भी हर ऑर्डर पर ${earn} कमाई है। कुछ बदलने की ज़रूरत नहीं।`]],cta:{en:'OK',hi:'ठीक है'},reply:{en:'Got it.',hi:'ठीक है।'}};
 };
 
 /* ---- Imran: Launch → Lift → Defend, GST electronics seller with ads ---- */
@@ -517,10 +521,10 @@ SELLERS.imran.events=[
   rule:'Signals 4 and 6 fire in a known season. Rule: set festive prices with an expiry so they never become the new anchor.'}];
 SELLERS.imran.T=function(i,x,fl){
   if(i===0){const loss=amt(econ(549,x).contribKept);return{en:[['warn',`${atPrice(549,x)} Your lowest safe price is ${inr(fl)}.`],['',I_RULE.kind==='below'?`Most earbud orders land between ₹600 and ₹720, above your lowest safe price. Start at ₹${I_LAUNCH}, one step above the middle of that range: it is easier to lower a price than to raise it. We will review it on 23 Sep.`:`${inr(fl)} is inside the range where most earbud orders land (₹600–₹720). Start at ₹${I_LAUNCH} and think of the first 50 orders as learning. We will review it on 23 Sep.`]],hi:[['warn',`${atPrice(549,x,1)} आपका सबसे कम सुरक्षित दाम ${inr(fl)} है।`],['',(I_RULE.kind==='below'?`ज़्यादातर ईयरबड्स के ऑर्डर ₹600 से ₹720 के बीच आते हैं, आपके सबसे कम सुरक्षित दाम से ऊपर। ₹${I_LAUNCH} से शुरू करें: दाम घटाना आसान है, बढ़ाना मुश्किल। 23 सितंबर को हम इसे फिर देखेंगे।`:`${inr(fl)} उसी दायरे में है जहाँ ज़्यादातर ईयरबड्स के ऑर्डर आते हैं (₹600–₹720)। ₹${I_LAUNCH} से शुरू करें और पहले 50 ऑर्डर से सीखें। 23 सितंबर को हम इसे फिर देखेंगे।`)]],cta:{en:`Set ₹${I_LAUNCH}`,hi:`₹${I_LAUNCH} सेट करें`},reply:{en:`Price set to ₹${I_LAUNCH}.`,hi:`दाम ₹${I_LAUNCH} सेट हो गया।`}};}
-  if(i===1){const f2=econ(0,IB2).floor,gain=inr(econ(I_LAUNCH,IB2).contribKept-econ(I_LAUNCH,IB).contribKept);return{en:[['good','Ads are costing you ₹40 per order: ₹2 per click, and 1 in 20 clicks buys.'],['',`34% of your orders now come without ads. Halve your ad budget? Your lowest safe price drops from ${inr(fl)} to ${inr(f2)} and you keep about ${gain} more per order.`]],hi:[['good','विज्ञापन पर हर ऑर्डर ₹40 ख़र्च हो रहे हैं: हर क्लिक ₹2, और 20 में से 1 क्लिक ख़रीदता है।'],['',`अब आपके 34% ऑर्डर बिना विज्ञापन के आते हैं। विज्ञापन बजट आधा करें? आपका सबसे कम सुरक्षित दाम ${inr(fl)} से ${inr(f2)} हो जाएगा और हर ऑर्डर पर लगभग ${gain} ज़्यादा बचेंगे।`]],cta:{en:'Halve ad budget',hi:'विज्ञापन बजट आधा करें'},reply:{en:'Ad budget halved. We will watch your views for 7 days.',hi:'विज्ञापन बजट आधा हो गया। अगले 7 दिन हम आपके व्यू पर नज़र रखेंगे।'}};}
-  if(i===2){const lose=amt(econ(529,x).contribKept),pf=inr(econ(0,x,2).floor/2);return{en:[['warn',`Three rivals are at ₹529, below your lowest safe price of ${inr(fl)}. ${econ(529,x).contribKept<0?`Matching them loses ${lose} on every order.`:`Matching them leaves only ${inr(econ(529,x).contribKept)} per order, below your ₹${x.target} target.`} Sellers who sell below their safe price usually leave within weeks.`],['',`Hold at ₹${I_LAUNCH}, or list a 2-pack at ₹1,149. Your lowest safe price there is ${pf} per pair.`]],hi:[['warn',`तीन सेलर ₹529 पर हैं, आपके सबसे कम सुरक्षित दाम ${inr(fl)} से नीचे। ${econ(529,x).contribKept<0?`उनके बराबर आने पर हर ऑर्डर पर ${lose} का नुकसान होगा।`:`उनके बराबर आने पर हर ऑर्डर पर सिर्फ़ ${inr(econ(529,x).contribKept)} बचेंगे।`} सुरक्षित दाम से नीचे बेचने वाले सेलर अक्सर कुछ हफ़्तों में बाहर हो जाते हैं।`],['',`₹${I_LAUNCH} पर टिके रहें, या 2-पैक ₹1,149 में लिस्ट करें। वहाँ आपका सबसे कम सुरक्षित दाम ${pf} प्रति जोड़ी है।`]],cta:{en:'List the 2-pack',hi:'2-पैक लिस्ट करें'},reply:{en:`2-pack listed at ₹1,149. Single pair stays at ₹${I_LAUNCH}.`,hi:`2-पैक ₹1,149 पर लिस्ट हो गया। सिंगल जोड़ी ₹${I_LAUNCH} पर ही है।`}};}
+  if(i===1){const f2=econ(I_LAUNCH,IB2).floor,gain=inr(econ(I_LAUNCH,IB2).contribKept-econ(I_LAUNCH,IB).contribKept);return{en:[['good','Ads are costing you ₹40 per order: ₹2 per click, and 1 in 20 clicks buys.'],['',`34% of your orders now come without ads. Halve your ad budget? Your lowest safe price drops from ${inr(fl)} to ${inr(f2)} and you keep about ${gain} more per order.`]],hi:[['good','विज्ञापन पर हर ऑर्डर ₹40 ख़र्च हो रहे हैं: हर क्लिक ₹2, और 20 में से 1 क्लिक ख़रीदता है।'],['',`अब आपके 34% ऑर्डर बिना विज्ञापन के आते हैं। विज्ञापन बजट आधा करें? आपका सबसे कम सुरक्षित दाम ${inr(fl)} से ${inr(f2)} हो जाएगा और हर ऑर्डर पर लगभग ${gain} ज़्यादा बचेंगे।`]],cta:{en:'Halve ad budget',hi:'विज्ञापन बजट आधा करें'},reply:{en:'Ad budget halved. We will watch your views for 7 days.',hi:'विज्ञापन बजट आधा हो गया। अगले 7 दिन हम आपके व्यू पर नज़र रखेंगे।'}};}
+  if(i===2){const lose=amt(econ(529,x).contribKept),pf=inr(econ(1149,x,2).floor/2);return{en:[['warn',`Three rivals are at ₹529, below your lowest safe price of ${inr(fl)}. ${econ(529,x).contribKept<0?`Matching them loses ${lose} on every order.`:`Matching them leaves only ${inr(econ(529,x).contribKept)} per order, below your ₹${x.target} target.`} Sellers who sell below their safe price usually leave within weeks.`],['',`Hold at ₹${I_LAUNCH}, or list a 2-pack at ₹1,149. Your lowest safe price there is ${pf} per pair.`]],hi:[['warn',`तीन सेलर ₹529 पर हैं, आपके सबसे कम सुरक्षित दाम ${inr(fl)} से नीचे। ${econ(529,x).contribKept<0?`उनके बराबर आने पर हर ऑर्डर पर ${lose} का नुकसान होगा।`:`उनके बराबर आने पर हर ऑर्डर पर सिर्फ़ ${inr(econ(529,x).contribKept)} बचेंगे।`} सुरक्षित दाम से नीचे बेचने वाले सेलर अक्सर कुछ हफ़्तों में बाहर हो जाते हैं।`],['',`₹${I_LAUNCH} पर टिके रहें, या 2-पैक ₹1,149 में लिस्ट करें। वहाँ आपका सबसे कम सुरक्षित दाम ${pf} प्रति जोड़ी है।`]],cta:{en:'List the 2-pack',hi:'2-पैक लिस्ट करें'},reply:{en:`2-pack listed at ₹1,149. Single pair stays at ₹${I_LAUNCH}.`,hi:`2-पैक ₹1,149 पर लिस्ट हो गया। सिंगल जोड़ी ₹${I_LAUNCH} पर ही है।`}};}
   if(i===3)return{en:[['warn',`Returns are up to 21%. Your lowest safe price is now ${inr(fl)}.`],['','Most returns say “not working”. Test each pair before dispatch instead of cutting the price.']],hi:[['warn',`रिटर्न बढ़कर 21% हो गए हैं। आपका सबसे कम सुरक्षित दाम अब ${inr(fl)} हो गया है।`],['','ज़्यादातर रिटर्न में लिखा है “काम नहीं कर रहा”। दाम मत घटाइए, हर जोड़ी भेजने से पहले टेस्ट कीजिए।']],cta:{en:'Add pre-dispatch check',hi:'भेजने से पहले जाँच जोड़ें'},reply:{en:'Pre-dispatch check added. We will track returns for 14 days.',hi:'भेजने से पहले जाँच जुड़ गई। अगले 14 दिन हम रिटर्न पर नज़र रखेंगे।'}};
-  const base=econ(0,IB2).floor;
+  const base=econ(I_LAUNCH,IB2).floor;
   return{en:[['good',`In festival weeks more parcels come back undelivered. Your lowest safe price this month is ${inr(fl)}, not ${inr(base)}.`],['','We have raised your lowest price for now. It returns to normal on 15 November.']],hi:[['good',`त्योहार के हफ़्तों में ज़्यादा पार्सल बिना डिलीवर हुए लौटते हैं। इस महीने आपका सबसे कम सुरक्षित दाम ${inr(fl)} है, ${inr(base)} नहीं।`],['','हमने अभी के लिए आपका सबसे कम दाम बढ़ा दिया है। यह 15 नवंबर को सामान्य हो जाएगा।']],cta:{en:'OK',hi:'ठीक है'},reply:{en:'Got it.',hi:'ठीक है।'}};
 };
 
@@ -634,7 +638,7 @@ function bandBar(p,fl,m,sug,be){
   h+=`<div class="pb-buy${pc(B.hi)>70?' r':pc(B.lo)<30?' l':''}" style="left:${pc(B.lo)}%;width:${w(B.lo,B.hi)}%"><span>Most buyers pay ${inr(B.lo)}–${inr(B.hi)}</span></div>`;
   return h+`</div><div class="pb-key"><span><i class="loss"></i>You lose money</span><span><i class="low"></i>You keep less than you want</span><span><i class="safe"></i>Safe</span>`;
 }
-const PART_META=[['goods','Product, incl. returns you can’t resell','#7C68A6'],['pack','Packing + labour','#B9AED0'],['fwd','Delivery charge','#0B7A68'],['rev','Return charge','#C62828'],['rtoShip','Undelivered parcels (both ways)','#8D6E63'],['shipGst','GST on delivery charges (18%)','#5C6BC0'],['ads','Ads','#D18A00'],['profit','Money you want to keep','#2E7D32']];
+const PART_META=[['goods','Product, incl. returns you can’t resell','#7C68A6'],['pack','Packing','#B9AED0'],['fwd','Delivery charge','#0B7A68'],['rev','Return charge','#C62828'],['rtoShip','Undelivered parcels (RTO)','#8D6E63'],['shipGst','18% GST on the delivery charge','#5C6BC0'],['ads','Ads','#D18A00'],['profit','Money you want to keep','#2E7D32']];
 /* Today's Meesho single-catalog flow: Select Category → Add Product Details (Product, Size and Inventory; Product Details; Other Attributes; images) → QC.
    Sahi Daam adds the teal box inside it. */
 const CATX={
@@ -682,7 +686,7 @@ function renderCatalog(sc){
         <div class="sd-nums">
           <div><div class="v" id="c-n1"></div><div class="l">No-loss price: below this you lose money</div></div>
           <div><div class="v" id="c-n3"></div><div class="l">Money you keep per order at your price, after returns</div></div>
-          <div><div class="v" id="c-n2"></div><div class="l">Returns your price can handle before you start losing</div></div>
+          <div><div class="v" id="c-n2"></div><div class="l">Max return rate you can survive at this price (returns and RTO, per 100 parcels)</div></div>
         </div>
         <div class="viab" id="c-viab"></div>
         <div class="lbl" style="margin-top:16px">Where does your price stand?</div>
@@ -696,14 +700,14 @@ function renderCatalog(sc){
           <div class="mgrid">
             <div>
               <div class="lbl" style="margin-bottom:6px">Filled in by Meesho · you can change</div>
-              <div class="row"><span>Delivery charge<small>customer pays it when the parcel is delivered; you pay it if it comes back undelivered</small></span><input id="m-fwd" type="number"></div>
-              <div class="row"><span>Return charge<small>for each customer return</small></span><input id="m-rev" type="number"></div>
+              <div class="row"><span>Delivery charge<small>customer pays it; you pay 18% GST on it for every delivered parcel</small></span><input id="m-fwd" type="number"></div>
+              <div class="row"><span>Return charge<small>for each customer return, GST included</small></span><input id="m-rev" type="number"></div>
               <div class="row"><span>Parcels not delivered (RTO) %<small>out of all sent · the product always comes back</small></span><input id="m-rto" type="number" step="0.5"></div>
-              <div class="row"><span>Return charge on RTO<small>you also pay the delivery charge on RTO</small></span><input id="m-rtoRet" type="number"></div>
+              <div class="row"><span>Charge on RTO<small>Meesho’s stated policy: no charge</small></span><span class="pill na" style="justify-self:end">₹0</span></div>
               <div class="row"><span>Customer returns %<small>out of delivered</small></span><input id="m-ret" type="number" step="0.5"></div>
               <div class="row"><span>Returns you can’t sell again %<small>out of customer returns</small></span><input id="m-uns" type="number"></div>
               <div class="lbl" style="margin:10px 0 6px">Your own costs</div>
-              <div class="row"><span>Packing + labour<small>per parcel</small></span><input id="m-pack" type="number"></div>
+              <div class="row"><span>Packing<small>polybag, label, tape · per parcel</small></span><input id="m-pack" type="number"></div>
               <div id="m-adrows"></div>
               <div class="row"><span>TCS 0.5% + TDS 0.1%<small>left out: you get it back (mentor)</small></span><span class="pill na" style="justify-self:end">₹0</span></div>
             </div>
@@ -735,9 +739,9 @@ function renderCatalog(sc){
   $('c-price').value=CAT.price;$('c-wdr').value=CAT.wdr;$('c-gst').value=CAT.gst?String(CAT.gstRate):'0';$('c-wt').value=CAT.weight;$('c-mrp').value=CAT.mrp;$('c-cost').value=CAT.cost;$('c-target').value=CAT.target;$('c-sku').value=CAT.sku;$('c-hsn').value=CAT.hsn;$('c-sizeopt').textContent=CAT.sizeLabel;$('c-varhead').textContent=D().key==='imran'?'Colour':'Size';$('c-sizelbl').textContent=D().key==='imran'?'Colour':'Size';
   const bindNum=(id,key,cb)=>$(id).addEventListener('input',e=>{const v=parseFloat(e.target.value);CAT[key]=isNaN(v)?0:v;(cb||updCatalog)();});
   bindNum('c-price','price');bindNum('c-wdr','wdr');bindNum('c-cost','cost');bindNum('c-target','target');bindNum('c-mrp','mrp');
-  bindNum('c-wt','weight',()=>{const s=CAT.weight>500?1:0;if(s!==CAT.slab){CAT.slab=s;CAT.fwd=SLABS[s].fwd;CAT.rev=SLABS[s].rev;CAT.rtoRet=SLABS[s].fwd;fillMath();}updCatalog();});
+  bindNum('c-wt','weight',()=>{const s=CAT.weight>500?1:0;if(s!==CAT.slab){CAT.slab=s;CAT.fwd=SLABS[s].fwd;CAT.rev=SLABS[s].rev;fillMath();}updCatalog();});
   $('c-gst').onchange=e=>{const r=+e.target.value;CAT.gst=r>0;CAT.gstRate=r;if(!CAT.gst){CAT.ads=0;}else if(CAT.cpc&&CAT.conv){CAT.ads=CAT.cpc/(CAT.conv/100);}fillMath();updCatalog();};
-  ['fwd','rev','rtoRet','rto','ret','uns','pack'].forEach(k=>bindNum('m-'+k,k));
+  ['fwd','rev','rto','ret','uns','pack'].forEach(k=>bindNum('m-'+k,k));
   $('c-submit').onclick=()=>{const e=econ(CAT.price,CAT);toast(CAT.price<e.floor?`Heads up: ₹${CAT.price} is below your lowest safe price of ₹${e.floor}. Catalog sent to Meesho for quality check.`:'Catalog sent to Meesho for quality check.');};
   fillMath();updCatalog();
 }
@@ -746,24 +750,24 @@ function shipPanel(CAT,e,p){
   const mine=(e.parts.rev+e.parts.rtoShip+e.parts.shipGst)/e.K, fl=e.floor/(1+e.g), cust=p+CAT.fwd;
   const pct=v=>Math.round(v*100);
   return `<h4>Who pays the delivery charge?<span class="mtag">Mentor feedback</span></h4>
-   <div class="sub">When a parcel is delivered, the customer pays the delivery charge, so it is not in your lowest safe price. You pay the return charge on customer returns, and both ways when a parcel comes back undelivered (RTO).</div>
+   <div class="sub">When a parcel is delivered, the customer pays the delivery charge, but you pay 18% GST on it. You pay the return charge (GST included) on customer returns. Meesho charges nothing when a parcel comes back undelivered (RTO).</div>
    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-top:6px">
      <div><div class="lbl">Customer pays</div><div style="font-size:13.5px"><b class="num">${inr(p)}</b> + <b class="num">${inr(CAT.fwd)}</b> delivery = <b class="num">${inr(cust)}</b> at checkout. Delivery adds <b>${pct(CAT.fwd/p)}%</b> to what the buyer pays, so it changes how many people buy, not what you keep.</div></div>
-     <div><div class="lbl">You pay</div><div style="font-size:13.5px">Return and RTO charges cost you <b class="num">${inr(mine)}</b> per order, <b>${pct(mine/fl)}%</b> of your lowest safe price. Fewer returns cut this straight away.</div></div>
+     <div><div class="lbl">You pay</div><div style="font-size:13.5px">Return charges and GST on delivery cost you <b class="num">${inr(mine)}</b> per order, <b>${pct(mine/fl)}%</b> of your lowest safe price. Fewer returns cut this straight away.</div></div>
    </div>`;
 }
 /* ---- mentor feedback 2b: lower the cost before raising the price ---- */
 function cutPanel(CAT){
   const base=econ(0,CAT).floor,L=[];
   const add=(label,how,x)=>{const f=econ(0,{...CAT,...x}).floor;if(base-f>0)L.push([label,how,base-f,f]);};
-  if(CAT.slab===1)add('Pack under 500 g','Lighter packing moves you to the cheaper weight slab',{slab:0,fwd:SLABS[0].fwd,rev:SLABS[0].rev,rtoRet:SLABS[0].fwd});
+  if(CAT.slab===1)add('Pack under 500 g','Lighter packing moves you to the cheaper weight slab',{slab:0,fwd:SLABS[0].fwd,rev:SLABS[0].rev});
   add('Buy 5% cheaper','Bulk order or a second supplier',{cost:CAT.cost*0.95});
   add('Cut returns by 5 points',D().key==='imran'?'Test every unit before dispatch':'Size chart, true-colour photos',{ret:Math.max(0,CAT.ret-5)});
   add('Cut RTO by 5 points','Confirm COD orders before dispatch',{rto:Math.max(0,CAT.rto-5)});
-  add('Cheaper packaging','Bulk polybags and labels: ₹3 less per parcel',{pack:Math.max(0,CAT.pack-3)});
+  add('Cheaper packaging','Bulk polybags (₹2–4 instead of ₹3–6) and labels',{pack:Math.max(0,CAT.pack-2)});
   if(CAT.ads>0)add('Halve ad spend','Once over 30% of orders come without ads',{ads:CAT.ads/2});
   L.sort((a,b)=>b[2]-a[2]);
-  const all=econ(0,{...CAT,cost:CAT.cost*0.95,ret:Math.max(0,CAT.ret-5),rto:Math.max(0,CAT.rto-5),pack:Math.max(0,CAT.pack-3),ads:CAT.ads/2,...(CAT.slab===1?{slab:0,fwd:SLABS[0].fwd,rev:SLABS[0].rev,rtoRet:SLABS[0].fwd}:{})}).floor;
+  const all=econ(0,{...CAT,cost:CAT.cost*0.95,ret:Math.max(0,CAT.ret-5),rto:Math.max(0,CAT.rto-5),pack:Math.max(0,CAT.pack-2),ads:CAT.ads/2,...(CAT.slab===1?{slab:0,fwd:SLABS[0].fwd,rev:SLABS[0].rev}:{})}).floor;
   return `<h4>Cut your costs before you raise your price<span class="mtag">Mentor feedback</span></h4>
    <div class="sub">A higher price can push buyers away; a lower cost never does. Each change below lowers your lowest safe price.</div>
    <div class="mtw"><table class="mt"><thead><tr><th>Change</th><th>How</th><th class="n">Safe price drops by</th><th class="n">New lowest safe price</th></tr></thead><tbody>
@@ -781,7 +785,7 @@ function compPanel(S,CAT,e){
    </tbody></table></div>
    <div style="font-size:13.5px;margin-top:8px">${below?`<b>${below} of ${C.length}</b> sell below your lowest safe price: don’t follow them down. `:''}The best-rated listing (${best.rating.toFixed(1)}★, ${best.reviews.toLocaleString('en-IN')} reviews) sells at <b class="num">${inr(best.price)}</b>, so buyers here pay for rating, photos and fast delivery, not just a low price.</div>`;
 }
-function fillMath(){const CAT=D().cat;['fwd','rev','rtoRet','rto','ret','uns','pack'].forEach(k=>{const el=$('m-'+k);if(el)el.value=CAT[k];});
+function fillMath(){const CAT=D().cat;['fwd','rev','rto','ret','uns','pack'].forEach(k=>{const el=$('m-'+k);if(el)el.value=CAT[k];});
   const box=$('m-adrows');if(!box)return;
   if(!CAT.gst){box.innerHTML=`<div class="row"><span>Meesho Ads<small>not available without GST registration</small></span><span class="pill na" style="justify-self:end">₹0</span></div>`;return;}
   box.innerHTML=`<div class="row"><span>Ad cost per click<small>Meesho Ads, usually ₹1–5</small></span><input id="m-cpc" type="number" step="0.5"></div><div class="row"><span>Clicks that buy %<small>ad cost per order = cost per click ÷ this</small></span><input id="m-conv" type="number" step="0.5"></div>`;
@@ -798,12 +802,12 @@ function updCatalog(){
   $('c-verdict').innerHTML=below?`<span class="pill loss">✗ At ${inr(p)}: you lose ${amt(e.contribKept)} per order</span>`:p<fl?`<span class="pill watch">! At ${inr(p)}: you keep ${inr(e.contribKept)} per order</span>`:`<span class="pill gain">✓ At ${inr(p)}: you keep ${inr(e.contribKept)} per order</span>`;
   $('c-n1').textContent=inr(e.breakEven);
   const n3=$('c-n3');n3.textContent=inr(e.contribKept);n3.style.color=below?'var(--loss)':'var(--gain)';
-  const mr=maxReturn(p,CAT),n2=$('c-n2');
-  n2.innerHTML=mr===null?'0% <span class="muted" style="font-size:12px">(you lose even with no returns)</span>':`${mr.toFixed(0)}% <span class="muted" style="font-size:12px">(yours now: ${CAT.ret.toFixed(0)}%)</span>`;
-  n2.style.color=(mr===null||mr<CAT.ret)?'var(--loss)':'var(--gain)';
+  const mr=maxReturn(p,CAT),n2=$('c-n2'),myR=Math.round(e.rt),myT=Math.round(e.rto),myF=(e.rt+e.rto)/2;
+  n2.innerHTML=mr===null?'0% <span class="muted" style="font-size:12px">(you lose even with no returns)</span>':`${mr.toFixed(1)}% <span class="muted" style="font-size:12px">(yours: ${myR} returns + ${myT} RTO per 100)</span>`;
+  n2.style.color=(mr===null||mr<myF)?'var(--loss)':'var(--gain)';
   $('c-viab').innerHTML=mr===null?`<span class="pill loss">✗ Returns too high</span> At ${inr(p)} you lose money even if nobody returns anything.`
-    :mr<CAT.ret?`<span class="pill loss">✗ Returns too high</span> ${CAT.ret.toFixed(0)}% of your orders come back, but this price can only handle ${mr.toFixed(0)}%. Fix the returns or the price; ads won’t help.`
-    :`<span class="pill gain">✓ Returns OK</span> ${CAT.ret.toFixed(0)}% of your orders come back, and this price can handle up to ${mr.toFixed(0)}%.`;
+    :mr<myF?`<span class="pill loss">✗ Returns too high</span> Out of 100 parcels, ${myR} are returned and ${myT} are not delivered. At ${inr(p)} you can afford only about ${mr.toFixed(1)} of each. Fix the returns or the price; ads won’t help.`
+    :`<span class="pill gain">✓ Returns OK</span> Out of 100 parcels, ${myR} are returned and ${myT} are not delivered. At ${inr(p)} you can afford up to ${mr.toFixed(1)} of each.`;
   $('c-band').innerHTML=bandBar(p,fl,m,launchRule(CAT,m).price,e.breakEven);
   $('c-bandnote').innerHTML=`Below <b>${inr(e.breakEven)}</b> you lose money. From <b>${inr(fl)}</b> up, you keep the ₹${CAT.target||0} you want on every order.`;
   const L=launchRule(CAT,m);
@@ -817,7 +821,7 @@ function updCatalog(){
   const parts=PART_META.filter(m=>all[m[0]]>0);
   $('m-stack').innerHTML=parts.map(m=>`<div style="width:${all[m[0]]/tot*100}%;background:${m[2]}"></div>`).join('');
   $('m-legend').innerHTML=parts.map(m=>`<div><i style="background:${m[2]}"></i>${m[1]}<span class="num">${inr(all[m[0]]/e.K)}</span></div>`).join('')+(e.g?`<div><i style="background:#8A90A2"></i>Product GST ${Math.round(e.g*100)}% on top<span class="num">${inr(tot/e.K*e.g)}</span></div>`:'');
-  const q=e.parts,r0=v=>Math.round(v).toLocaleString('en-IN');$('m-formula').textContent=`Lowest safe price = (product ${r0(q.goods)} + packing ${r0(q.pack)} + return & RTO charges ${r0(q.rev+q.rtoShip)} + GST on charges ${r0(q.shipGst)} + ads ${r0(q.ads)} + money you want ${r0(e.profit)}) ÷ ${e.K.toFixed(1)} parcels not returned${e.g?' × '+(1+e.g).toFixed(2)+' product GST':''} = ${inr(fl)}`;
+  const q=e.parts,r0=v=>Math.round(v).toLocaleString('en-IN');$('m-formula').textContent=`Lowest safe price = (product ${r0(q.goods)} + packing ${r0(q.pack)} + return charges ${r0(q.rev+q.rtoShip)} + 18% GST on delivery charge ${r0(q.shipGst)} + ads ${r0(q.ads)} + money you want ${r0(e.profit)}) ÷ ${e.K.toFixed(1)} parcels that stay sold${e.g&&CAT.gstRate>=12?` × ${(1+e.g).toFixed(2)} product GST`:''} = ${inr(fl)}`;
 }
 
 /* ================= PRICE RECOMMENDATION ================= */
@@ -873,12 +877,12 @@ function drawPR(){
    <div class="banner" style="margin-top:12px">These prices are recommended to keep you competitive with other sellers across platforms and increase your visibility and sales</div>
    <div class="tw"><table class="pr"><thead><tr>
      <th>Product</th><th>Current Price</th><th class="rec">Recommended Price</th>
-     <th class="sdc">Lowest safe price<small>सबसे कम सही दाम · your cost + your profit</small></th><th>Action</th></tr></thead><tbody><tr>
+     <th class="sdc">Lowest safe price<small>सबसे कम सही दाम · all costs + your profit</small></th><th>Action</th></tr></thead><tbody><tr>
       <td class="pname"><a href="#pricerec">${esc(r.name)}</a><small>Type: ${r.type}</small><small>Category: ${r.cat}</small><small>Catalog ID: ${r.cid}</small></td>
       <td><div class="price num">${inr(r.cur)}</div><div class="settle">Transfer Price: ${inr(settle(r.cur,r.x))}</div></td>
       <td class="rec"><div class="price num">${inr(r.rec)}</div><div class="settle">Transfer Price: ${inr(settle(r.rec,r.x))}</div></td>
       <td class="sdc"><div class="price num" style="color:var(--sd);font-weight:500">${inr(fl)}</div>
-        <div class="settle" style="margin-top:2px">= ${inr(be)} your cost + ${inr(fl-be)} your profit${r.x.gst?' (with GST)':''}</div>
+        <div class="settle" style="margin-top:2px">below ${inr(be)} you lose money</div>
         <div style="margin-top:8px"><span class="pill ${v.cls}">${v.ic} ${v.txt}</span>${v.sub?`<div class="settle">${v.sub}</div>`:''}</div>${curNote}</td>
       <td><div class="act"><div class="pin"><input id="pi-${r.id}" type="number" value="${r.edit}" aria-label="Price for ${esc(r.name)}"><button data-pop="${r.id}" aria-label="Edit price">✎</button></div>
         <button class="btn green" data-acc="${r.id}">Accept</button>
@@ -1059,7 +1063,7 @@ function renderQuality(sc){
     <span class="sd-badge">Sahi Daam · What returns cost you</span>
     <div class="hi-sub">रिटर्न से आपका कितना पैसा जाता है</div>
     <div class="qbig">
-      <div><div class="lbl">Returns take away</div><div class="num big" style="color:var(--loss)">${inr(c.retCost)}</div><div class="muted sm">from every order you sell (return shipping, GST on it, and pieces you can’t sell again)</div></div>
+      <div><div class="lbl">Returns take away</div><div class="num big" style="color:var(--loss)">${inr(c.retCost)}</div><div class="muted sm">from every order you sell (return charges and pieces you can’t sell again)</div></div>
       <div><div class="lbl">Lowest safe price now</div><div class="num big">${inr(T.safe)}</div><div class="muted sm">with ${pct(Q.catNorm.ret)} returns like others: ${inr(C.safe)}</div></div>
       <div><div class="lbl">At your price ${inr(p)}</div><div class="pill ${vT.c}" style="margin-top:6px;white-space:normal">${vT.t}</div><div class="muted sm">${earnLine(T.earn,tgt,true).t}</div></div>
     </div>
@@ -1113,14 +1117,14 @@ const STAGE_P={LAUNCH:['Start','Getting your first orders and reviews','शु�
   LIFT:['Grow','Earning more without losing orders','बढ़ना: ऑर्डर खोए बिना ज़्यादा कमाई'],
   DEFEND:['Protect','Keeping your profit safe when others cut prices','बचाव: दूसरे दाम घटाएँ तब भी मुनाफ़ा बचाना'],
   CLEAR:['Clear','Selling old stock at the end of the season','स्टॉक ख़ाली करना: सीज़न के अंत में']};
-const EV_NAME={rekha:['Listing day','First returns','People look, few buy','Shipping cost went up'],
+const EV_NAME={rekha:['Listing day','First returns','People look, few buy','Return fee went up'],
   imran:['Listing day','Orders without ads','Rivals cut price','More returns','Festival week']};
 function plainWhy(S,i){const x=evX(i);
   if(S.key==='rekha')return [
    `${atPrice(320,x)} Kurtis like yours sell most between ₹400 and ₹480. Sahi Daam suggests starting at ₹${R_LAUNCH}: lowering a price later is easy, raising it is hard. Without GST you can’t run ads, so the price has to do the work.`,
    'More of your parcels come back than for similar kurtis (35 vs 30 out of 100). The main reason is the photo colour, so the fix is a new photo, not a lower price.',
    `People see your kurti, but few buy. Sahi Daam tries ₹${R_TEST} for 7 days and keeps it only if you make more money from every 1,000 people who see it.`,
-   'Shipping cost went up. Sahi Daam re-checks your lowest safe price by itself, so a cost change never becomes a hidden loss.'][i];
+   'Meesho’s return fee went up. Sahi Daam re-checks your lowest safe price by itself, so a cost change never becomes a hidden loss.'][i];
   return [
    `${atPrice(549,x)} Earbuds like yours sell most between ₹600 and ₹720. Sahi Daam suggests ₹${I_LAUNCH}.`,
    'A third of your orders now come without ads. Spending less on ads is the easiest extra money, and the price stays the same.',
@@ -1249,10 +1253,10 @@ function renderPH(s){
 }
 function renderAbout(sc){
   sc.innerHTML=`<div class="card" style="margin-bottom:14px;border-color:#CFC3EE"><h2>Mentor feedback (1 Oct) and where it is in the prototype</h2><ul class="clean">
-      <li><b>Forward shipping is not the seller’s cost:</b> the customer pays it on delivered orders, so it is out of the floor (with its GST) and out of the bank settlement.</li>
-      <li><b>RTO is not free:</b> the seller pays forward and return shipping on every RTO parcel, but always gets the product back. The floor now charges both ways on RTO and only counts customer returns as unsellable.</li>
+      <li><b>Forward shipping is not the seller’s cost:</b> the customer pays it on delivered orders. The seller still pays 18% GST on it (deck, slide 5).</li>
+      <li><b>RTO:</b> the product always comes back, so only customer returns can be unsellable (about 1 in 10, deck). Shipping on RTO follows the deck: Meesho’s stated policy is no charge.</li>
       <li><b>TDS and TCS:</b> left out of the floor (refundable). GST kept at a small assumed rate.</li>
-      <li><b>Who bears shipping?</b> Catalog Upload shows what the customer pays at checkout and what the seller pays (returns and RTO).</li>
+      <li><b>Who bears shipping?</b> Catalog Upload shows what the customer pays at checkout and what the seller pays (return charges and GST on delivery).</li>
       <li><b>Launching at a thin margin:</b> Catalog Upload lists the competitors to check, and shows how to lower the floor through cost before raising the price.</li>
       <li><b>Quality and profit:</b> Quality Dashboard shows how fixing the top return reason changes floor, orders and profit per 1,000 views.</li></ul></div>`+`<div class="engines">
     <div class="card"><h2>1 · Floor engine</h2><dl><dt>Where</dt><dd>Catalog Upload, next to Meesho Price</dd><dt>Inputs</dt><dd>Purchase cost and GST from the seller; shipping, RTO and return rates from Meesho</dd><dt>Prototype</dt><dd><span class="pill ok">Real math</span> Deck formula: (product + packaging + shipping + GST on shipping + ads + target profit) ÷ parcels that stay sold. Rekha’s ₹185 kurti: break-even ₹368, floor ₹388 with ₹20 profit</dd></dl></div>

@@ -605,7 +605,7 @@ const PH={
  returns:['Return/RTO Orders','Orders that came back: RTO (not charged to the seller) and customer returns (return shipping charged).','Your own RTO and return rates replace the category defaults in the lowest safe price once a catalog has about 30 orders. This is signal 4.'],
  inventory:['Inventory','Active, out-of-stock, low-stock, blocked and paused catalogs.','Weeks of cover drives the CLEAR stage at the end of a season: price to recover cash when stock is ageing.'],
  payments:['Payments','Next payment, last payment, penalties, waivers and compensations.','Actual deductions per order are used to check the shipping and fee figures behind the lowest safe price every week.'],
- ads:['Advertisement','Boost catalogs with a daily budget and duration.','Ad spend ÷ orders gives ad cost per order, which goes into the lowest safe price. Autopilot never lets a boosted catalog sell below it.'],
+ ads:['Advertisement','Boost catalogs with a daily budget and duration. You are charged only if a customer clicks on the ad.','Ad spend ÷ orders gives ad cost per order, which goes into the lowest safe price. Autopilot never lets a boosted catalog sell below it.'],
  prodrec:['Product Recommendations','What products to sell next.','Not used in this prototype.'],
  support:['Support','Help with cataloguing, shipping and other queries.','A “Why is my lowest safe price ₹X?” article would link here from every lowest safe price.'],
  images:['Images Bulk Upload','Upload product images and copy their links for bulk upload.','Not used in this prototype.'],
@@ -904,6 +904,7 @@ function drawPR(){
      <div class="card sd-box"><span class="sd-badge">Sahi Daam</span><div class="muted" style="margin-top:4px">Change in your profit</div><div class="big num" style="color:${dP<0?'var(--loss)':'var(--gain)'}">${dP<0?'−':'+'}${inr(Math.abs(dP))}</div><div class="settle">for every 1,000 people who see it${dP<0&&oUp>0?' · more orders, but less money':''}</div></div>
    </div>
    <div class="banner" style="margin-top:12px">These prices are recommended to keep you competitive with other sellers across platforms and increase your visibility and sales</div>
+   <div class="sd-box" style="margin-top:8px;padding:10px 14px"><span class="sd-badge">Sahi Daam</span> <b>Meesho checks that your price is competitive. Sahi Daam also checks that you don’t lose money at that price.</b><div class="hi-sub">Meesho देखता है कि आपका दाम बाकी sellers जितना हो। Sahi Daam यह भी देखता है कि उस दाम पर आपको घाटा न हो।</div></div>
    <div class="tw"><table class="pr"><thead><tr>
      <th>Product</th><th>Current Price</th><th class="rec">Recommended Price</th>
      <th class="sdc">Lowest safe price<small>सबसे कम सही दाम · all your costs</small></th><th>Action</th></tr></thead><tbody><tr>
@@ -1098,6 +1099,7 @@ function returnsBoxHTML(S,c,noChips){
   return `  <div class="sd-box retbox" style="margin-top:14px">
     <span class="sd-badge">Sahi Daam · What returns cost you · ${esc(Q.catalog)}</span>
     <div class="hi-sub">रिटर्न से आपका कितना पैसा जाता है</div>
+    <div class="muted" style="margin:6px 0 2px">Meesho says this dashboard helps you “reduce returns, negative feedback, and increase profitability”. <b style="color:var(--sd)">Sahi Daam shows how much, <span style="white-space:nowrap">in ₹.</span></b></div>
     <div class="qbig">
       <div><div class="lbl">Returns take away</div><div class="num big" style="color:var(--loss)">${inr(c.retCost)}</div><div class="muted sm">from every order you sell (return charges and pieces you can’t sell again)</div></div>
       <div><div class="lbl">Lowest safe price now</div><div class="num big">${inr(T.safe)}</div><div class="muted sm">with ${pct(Q.catNorm.ret)} returns like others: ${inr(C.safe)}</div></div>
@@ -1316,7 +1318,7 @@ function renderSettings(sc){
 function renderPH(s){
   let[t,what,use]=PH[s];
   if(s==='ads'&&!D().base.gst)use=`Meesho Ads are not available to sellers without a regular GSTIN, so ${D().owner} can’t buy visibility. Price is her main lever, which is why her first price has to clear her lowest safe price.`;
-  if(s==='ads'&&D().base.gst)use=`Ad cost per order = cost per click ÷ share of clicks that buy (₹2 ÷ 5% = ₹40). That ₹40 goes into ${D().owner}’s lowest safe price. Once more than 30% of orders arrive without ads, Sahi Daam suggests cutting spend before touching price.`;
+  if(s==='ads'&&D().base.gst)use=`You pay only for clicks, but not every click buys. Ad cost per order = cost per click ÷ share of clicks that buy (₹2 ÷ 5% = ₹40). That ₹40 goes into ${D().owner}’s lowest safe price. Once more than 30% of orders arrive without ads, Sahi Daam suggests cutting spend before touching price.`;
   $('screen').innerHTML=`<div class="ph"><div class="card"><h2>${t}</h2><p class="muted" style="margin:0">${what}</p></div>
     <div class="sd-box"><span class="sd-badge">What Sahi Daam reads from here</span><p style="margin:8px 0 0">${use}</p></div>
     <div class="greyrow"></div><div class="greyrow"></div><div class="greyrow"></div>

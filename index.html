@@ -941,7 +941,7 @@ function drawPR(){
   const oUp=(ordersPer1k(r.rec,r.m)/ordersPer1k(r.cur,r.m)-1)*100, sUp=((r.rec*ordersPer1k(r.rec,r.m))/(r.cur*ordersPer1k(r.cur,r.m))-1)*100;
   const pNow=c1k(r.cur,r.x,r.m),pRec=c1k(r.rec,r.x,r.m),dP=pRec-pNow;
   const sg=v=>(v>=0?'+':'−')+Math.abs(Math.round(v))+'%';
-  const curNote=r.cur<be?`<div class="settle" style="color:var(--loss)">✗ Your price ${inr(r.cur)} is also losing money</div>`:r.cur<fl?`<div class="settle" style="color:var(--warn)">! Your price ${inr(r.cur)} is also too low</div>`:'';
+  const curNote=r.cur<be?`<div style="margin-top:6px"><span class="pill loss">✗ Your price ${inr(r.cur)} is also losing money</span></div>`:r.cur<fl?`<div style="margin-top:6px"><span class="pill watch">! Your price ${inr(r.cur)} is also too low</span></div>`:'';
   const tip=v.cls==='gain'?'':`<div class="settle" style="color:var(--sd);margin-top:8px"><b>Sahi Daam:</b> ${v.cls==='loss'?`Don’t go down to ${inr(r.rec)}.`:`${inr(r.rec)} is too low for you.`} ${r.cur>=fl?`Keep your price at ${inr(r.cur)}.`:`Keep at least ${inr(safe)}.`}</div>`;
   pane.innerHTML=`
    <div class="ovstats">

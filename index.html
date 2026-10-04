@@ -107,6 +107,40 @@ main{padding:0 16px 40px;min-width:0}
 .sd-nums .v{font:500 18px var(--mono)}
 .sd-nums .l{font-size:12px;color:var(--muted);line-height:1.3}
 .bandbar{margin:10px 2px 0}
+/* Meesho-style slider: thin track, pink fill to the thumb, white round thumb, tick marks with labels above, min/max below */
+.ms{--c:var(--brand);--f:0;position:relative;padding:24px 0 0;margin:4px 0 0}
+.ms.r2{padding-top:42px}
+.ms.sd{--c:var(--sd)}
+.ms .trk{position:relative;height:4px;border-radius:2px;background:linear-gradient(to right,var(--c) 0 calc(9px + (100% - 18px) * var(--f)),#DADDE5 0)}
+.ms .tk{position:absolute;top:-5px;width:2px;height:14px;margin-left:-1px;background:var(--c);border-radius:1px}
+.ms .tk.end{background:var(--c)}
+.ms .tk.sdk{background:var(--sd)}.ms .tk.mee{background:var(--brand)}.ms .tk.gry{background:#8A90A0}
+.ms .mtl{position:absolute;bottom:14px;transform:translateX(-50%);font:500 13px var(--font);color:#5A6072;white-space:nowrap}
+.ms .mtl.up{bottom:32px}
+.ms .mtl.L{transform:none;margin-left:-6px}.ms .mtl.R{transform:translateX(-100%);margin-left:6px}
+.ms .mtl.sdk{color:var(--sd);font-weight:700}.ms .mtl.mee{color:var(--brand);font-weight:700}
+.ms input[type=range]{-webkit-appearance:none;appearance:none;position:absolute;left:0;right:0;top:-7px;width:100%;height:18px;margin:0;background:transparent;z-index:3;cursor:pointer}
+.ms input[type=range]::-webkit-slider-runnable-track{height:18px;background:transparent}
+.ms input[type=range]::-moz-range-track{height:18px;background:transparent}
+.ms input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:#fff;border:2px solid var(--c);box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.ms input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:#fff;border:2px solid var(--c);box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.ms input[type=range]:focus{outline:none}
+.ms input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 4px rgba(230,70,127,.25)}
+.ms.sd input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 4px rgba(0,121,107,.25)}
+.aprules .ctl .ms{flex:1;width:100%}
+.ms .ends{display:flex;justify-content:space-between;font:500 13px var(--font);color:#3A3F4E;margin-top:12px}
+.pop.mee{width:470px}
+.pop .ptitle{font-weight:600;font-size:13px;letter-spacing:.04em;color:#3A3F4E;border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:10px}
+.pop .prow{display:flex;gap:16px;align-items:flex-start}
+.pop .pnum{flex:0 0 96px}
+.pop .pnum input{width:100%;border:1px solid #9AA0AE;border-radius:4px;padding:8px 10px;font:500 16px var(--font)}
+.pop .pslide{flex:1;min-width:0}
+.pop .msg{display:flex;gap:8px;align-items:flex-start}
+.pop .msg .mi{flex:0 0 18px;height:18px;border-radius:50%;color:#fff;font-size:11px;line-height:18px;text-align:center;font-weight:700}
+.pop .msg.good{background:#E7F6EF;color:#1F3A2C}.pop .msg.good .mi{background:#1E9E5A}
+.pop .msg.meh .mi{background:var(--warn)}.pop .msg.bad .mi{background:var(--loss)}
+.pop .btn.pupd{background:var(--brand);color:#fff;border-color:var(--brand)}
+@media (max-width:640px){.pop.mee{width:100%}.pop .prow{flex-direction:column}.pop .pnum{flex:none;width:120px}.pop .pslide{width:100%}}
 .pb-in{position:relative;height:122px}
 .pb-bar{position:absolute;left:0;right:0;top:52px;height:26px;border-radius:13px;overflow:hidden;background:#fff}
 .pb-seg{position:absolute;top:0;bottom:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden}
@@ -172,7 +206,6 @@ table.pr th.sdc{color:var(--sd)}
 .act .pin input{border:0;padding:6px 8px;width:100%;font:500 13px var(--mono)}
 .act .pin button{border:0;background:#fff;border-left:1px solid #CBD0DC;cursor:pointer;padding:0 8px}
 .pop{position:static;margin-top:4px;background:#fff;border:1px solid var(--line);box-shadow:0 8px 30px rgba(20,25,40,.18);border-radius:8px;padding:14px;width:340px;max-width:100%}
-.pop input[type=range]{width:100%;accent-color:var(--brand)}
 .pop .scale{position:relative;height:32px}
 .pop .scale span{position:absolute;transform:translateX(-50%);font:11px var(--mono);color:var(--muted)}
 .pop .msg{margin-top:10px;border-radius:6px;padding:8px 10px;font-size:13px}
@@ -223,7 +256,6 @@ table.pr th.sdc{color:var(--sd)}
 .qchips button{border:1px solid var(--sd-line);background:#fff;border-radius:999px;padding:5px 11px;font:13px var(--font);color:var(--ink);cursor:pointer}
 .qchips button[aria-pressed="true"]{background:var(--sd);border-color:var(--sd);color:#fff}
 .qslide{margin-top:14px;background:#fff;border:1px solid var(--sd-line);border-radius:8px;padding:12px}
-.qslide input[type=range]{width:100%;accent-color:var(--sd);margin-top:8px}
 .qscale{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
 .qbars{display:grid;gap:8px}
 .qbar{display:grid;grid-template-columns:minmax(0,220px) minmax(0,1fr) 70px;gap:10px;align-items:center;font-size:13px}
@@ -261,7 +293,6 @@ table.pr th.sdc{color:var(--sd)}
 @media (max-width:1000px){.aprules{grid-template-columns:repeat(2,minmax(0,1fr))}.aprules .rc:nth-child(3){border-left:0}.aprules .rc:nth-child(n+3){border-top:1px solid var(--line)}}
 @media (max-width:640px){.aprules{grid-template-columns:minmax(0,1fr)}.aprules .rc{border-left:0}.aprules .rc+.rc{border-top:1px solid var(--line)}}
 .aprules .big{font-size:20px;font-weight:600}
-.aprules input[type=range]{width:100%;accent-color:var(--sd)}
 .ap-mode{width:max-content;max-width:100%}
 .ap-mode button[aria-pressed="true"]{background:var(--sd-soft);color:var(--sd)}
 .apdeck{margin-top:8px;font-size:12.5px;color:var(--muted)}.apdeck summary{cursor:pointer}.apdeck div{margin-top:6px}
@@ -652,6 +683,17 @@ function renderHome(sc){
 
 /* ================= CATALOG UPLOAD ================= */
 /* Simple price bar: red = loss, yellow = low, green = safe; pins for your price and the suggested price; bracket for where most buyers shop */
+/* Meesho-style slider. ticks: [{v,t,cls}] with cls 'mee' (Meesho, pink), 'sdk' (Sahi Daam, teal) or 'gry' */
+function msHTML(o){
+  const lo=o.lo,hi=o.hi,fmt=o.fmt||inr,f=v=>Math.max(0,Math.min(1,(v-lo)/(hi-lo)));
+  const pos=v=>`left:calc(9px + (100% - 18px) * ${f(v).toFixed(4)})`;
+  const tk=(o.ticks||[]).filter(t=>t.v>=lo&&t.v<=hi).sort((a,b)=>a.v-b.v);
+  let prev=-1,up=false;tk.forEach(t=>{t.up=prev>=0&&f(t.v)-prev<0.24&&!tk[tk.indexOf(t)-1].up;if(t.up)up=true;prev=f(t.v);});
+  const lab=tk.map(t=>`<i class="tk ${t.cls||''}" style="${pos(t.v)}"></i><span class="mtl ${t.cls||''}${t.up?' up':''}${f(t.v)<0.1?' L':f(t.v)>0.9?' R':''}" style="${pos(t.v)}">${t.t}</span>`).join('');
+  return `<div class="ms${o.sd?' sd':''}${up?' r2':''}" style="--f:${f(o.val).toFixed(4)}"><div class="trk">${lab}<i class="tk end" style="${pos(lo)}"></i><i class="tk end" style="${pos(hi)}"></i>
+    <input type="range" id="${o.id}" min="${lo}" max="${hi}" step="${o.step||1}" value="${o.val}" aria-label="${esc(o.aria||'Value')}"></div>
+    <div class="ends num"><span>${fmt(lo)}</span><span>${fmt(hi)}</span></div></div>`;}
+function msSync(id){const i=$(id);if(!i)return;const lo=+i.min,hi=+i.max;i.closest('.ms').style.setProperty('--f',Math.max(0,Math.min(1,(+i.value-lo)/(hi-lo))).toFixed(4));}
 function bandBar(p,fl,m,sug,be,o){
   o=o||{};m=m||1;const B=BAND(m);let lo=Math.min(B.lo*0.62,be*0.78,p*0.85),hi=Math.max(B.hi*1.12,p*1.06,(sug||0)*1.06);
   if(o.range){[lo,hi]=o.range;}   // the price popover passes the slider's own range so the pin sits under the thumb
@@ -716,7 +758,7 @@ function renderCatalog(sc){
           <div><div class="v" id="c-n2"></div><div class="l">Max return rate you can survive at this price (returns and RTO, per 100 parcels)</div></div>
         </div>
         <div class="viab" id="c-viab"></div>
-        <div class="lbl" style="margin-top:16px">Where does your price stand?</div>
+        <div class="lbl" style="margin-top:16px">Where does your price stand? <b class="num" id="c-bandval" style="color:var(--ink);font-size:15px"></b></div>
         <div class="bandbar" id="c-band" aria-label="Where your price stands"></div>
         <div style="font-size:13.5px;margin-top:4px" id="c-bandnote"></div>
         <div class="sd-actions" id="c-actions"></div>
@@ -837,8 +879,12 @@ function updCatalog(){
   $('c-viab').innerHTML=mr===null?`<span class="pill loss">✗ Returns too high</span> At ${inr(p)} you lose money even if nobody returns anything.`
     :mr<myF?`<span class="pill loss">✗ Returns too high</span> Out of 100 parcels, ${myR} are returned and ${myT} are not delivered. At ${inr(p)} you can afford only about ${mr.toFixed(1)} of each. Fix the returns or the price; ads won’t help.`
     :`<span class="pill gain">✓ Returns OK</span> Out of 100 parcels, ${myR} are returned and ${myT} are not delivered. At ${inr(p)} you can afford up to ${mr.toFixed(1)} of each.`;
-  $('c-band').innerHTML=bandBar(p,fl,m,launchRule(CAT,m).price,e.breakEven);
-  $('c-bandnote').innerHTML=`Below <b>${inr(fl)}</b> you lose money. Above it, profit per order = your price − ${inr(fl)}.${cw?` <span style="color:var(--warn)">Similar listings sell from ${inr(compPrices(S,S.rows[0])[0])}: a higher price can mean fewer orders.</span>`:''}`;
+  {const B=BAND(m),Lp=launchRule(CAT,m).price,lo=Math.floor(Math.min(fl,B.lo,p)*0.6/10)*10,hi=Math.ceil(Math.max(B.hi*1.15,fl*1.4,p*1.05)/10)*10,ae=document.activeElement;
+   $('c-bandval').textContent=inr(p);
+   if(ae&&ae.id==='c-range'){msSync('c-range');}
+   else{$('c-band').innerHTML=msHTML({id:'c-range',lo,hi,val:p,sd:true,aria:'Your price',ticks:[{v:fl,t:'Safe '+inr(fl),cls:'sdk'}].concat(Lp&&Math.abs(Lp-fl)>=1?[{v:Lp,t:'Suggested '+inr(Lp),cls:'gry'}]:[])});
+     $('c-range').oninput=ev=>{CAT.price=+ev.target.value;$('c-price').value=CAT.price;updCatalog();};}}
+  $('c-bandnote').innerHTML=`Below <b>${inr(fl)}</b> you lose money. Above it, profit per order = your price − ${inr(fl)}. Most buyers pay ${inr(BAND(m).lo)}–${inr(BAND(m).hi)}.${cw?` <span style="color:var(--warn)">Similar listings sell from ${inr(compPrices(S,S.rows[0])[0])}: a higher price can mean fewer orders.</span>`:''}`;
   const L=launchRule(CAT,m);
   $('c-actions').innerHTML=`<div style="width:100%"><span class="lbl">Sahi Daam suggests</span><div style="margin:2px 0 8px">${({below:'Your lowest safe price is well below where most buyers shop. Start a little above the middle: it is easier to lower a price later than to raise it.',inside:'Your lowest safe price is where most buyers shop. Start just above it and learn from your first 50 orders.',above:'Even your lowest safe price is above where most buyers shop. Changing the price won’t fix this; change the product, packing or pack size.'})[L.kind]}</div></div>`+
     (L.price===null?`<span class="pill watch">No safe price where buyers shop</span>`:(p!==L.price?`<button class="btn sd" id="c-use">Use ${inr(L.price)}</button>`:`<span class="pill gain">✓ Suggested price is set</span>`))+
@@ -926,7 +972,8 @@ function drawPR(){
     if(r.edit<e1.floor){openPop=r.id;drawPR();toast(r.edit<e1.breakEven?`₹${r.edit} is too low. You will lose money. Lowest safe price: ₹${e1.floor}.`:`₹${r.edit} is too low for you. Lowest safe price: ₹${e1.floor}.`);return;}
     accept();toast(`${r.name}: price changed to ₹${r.edit}`);};
   if(openPop===r.id){
-    $('pop-range').oninput=e=>{r.edit=+e.target.value;$('pi-'+r.id).value=r.edit;updPop(r);};
+    $('pop-range').oninput=e=>{r.edit=+e.target.value;$('pi-'+r.id).value=r.edit;$('pop-num').value=r.edit;updPop(r);};
+    $('pop-num').oninput=e=>{r.edit=+e.target.value||0;$('pi-'+r.id).value=r.edit;$('pop-range').value=r.edit;updPop(r);};
     $('pop-cancel').onclick=()=>{openPop=null;r.edit=r.rec;drawPR();};
     $('pop-ok').onclick=()=>{const fl2=econ(0,r.x).floor,low=r.edit<fl2;accept();toast(low?`Price changed to ₹${r.edit}. This is below your lowest safe price.`:`${r.name}: price changed to ₹${r.edit}`);};
     updPop(r);}
@@ -956,21 +1003,20 @@ function verdict(p,x){const e=econ(p,x),k=e.contribKept;
   return {cls:'gain',ic:'✓',txt:`At ${inr(p)} you earn ${inr(k)} per order`};}
 function popRange(r){const fl=econ(0,r.x).floor;return [Math.round(Math.min(fl,r.rec)*0.75/10)*10,Math.round(Math.max(r.cur,fl)*1.35/10)*10];}
 function popHTML(r){const [lo,hi]=popRange(r),fl=econ(0,r.x).floor,pc=v=>Math.max(0,Math.min(100,(v-lo)/(hi-lo)*100)).toFixed(1);
-  return `<div class="pop" role="dialog" aria-label="Adjust price">
-    <div style="display:flex;justify-content:space-between;font-size:12px"><span class="num">${inr(lo)}</span><b class="num" id="pop-val" style="font-size:14px"></b><span class="num">${inr(hi)}</span></div>
-    <input type="range" id="pop-range" min="${lo}" max="${hi}" step="1" value="${r.edit}" aria-label="Price">
-    <div class="bandbar pop-band" id="pop-band"></div>
-    <div class="settle" style="font-size:12px">Lowest safe price <b class="num" style="color:var(--sd)">${inr(fl)}</b>. Price below it and you lose money</div>
-    <div class="settle" id="pop-settle"></div><div class="msg" id="pop-msg"></div>
-    <div class="row2"><button class="btn ghost" id="pop-cancel">Cancel</button><button class="btn ghost" id="pop-ok">Update</button></div></div>`;}
+  return `<div class="pop mee" role="dialog" aria-label="Edit price">
+    <div class="ptitle">EDIT PRICE</div>
+    <div class="settle" style="font-size:13px;margin:0 0 6px">Current Price <b class="num" style="color:var(--ink)">${inr(r.cur)}</b> · Competitive Price <b class="num" style="color:var(--ink)">${inr(r.rec)}</b> · <span style="color:var(--sd)">Lowest safe price <b class="num">${inr(fl)}</b></span></div>
+    <div class="prow"><div class="pnum"><input type="number" id="pop-num" value="${r.edit}" aria-label="New price"><div class="settle" id="pop-settle"></div></div>
+      <div class="pslide">${msHTML({id:'pop-range',lo,hi,val:r.edit,aria:'Price',ticks:[{v:r.rec,t:inr(r.rec),cls:'mee'},{v:fl,t:'Safe '+inr(fl),cls:'sdk'}]})}</div></div>
+    <div class="msg" id="pop-msg"></div>
+    <div class="row2"><button class="btn ghost" id="pop-cancel">Cancel</button><button class="btn pupd" id="pop-ok">Update Price</button></div></div>`;}
 function updPop(r){const e=econ(r.edit,r.x),fl=e.floor,be=e.breakEven,m=r.m;
-  $('pop-band').innerHTML=bandBar(r.edit,fl,m,r.rec,be,{range:popRange(r),short:true,sugLabel:'Meesho',sugCls:'mee',youLabel:''});
-  $('pop-val').textContent=inr(r.edit);$('pop-settle').textContent='Transfer Price: '+inr(settle(r.edit,r.x));
+  msSync('pop-range');$('pop-settle').textContent='Transfer Price: '+inr(settle(r.edit,r.x));
   const msg=$('pop-msg');
   const w=compWarn(r.edit,compPrices(D(),r));
-  if(r.edit<fl){msg.className='msg bad';msg.innerHTML=`<b>✗ Too low.</b> You lose ${amt(e.contribKept)} on every order.`;}
-  else if(w){msg.className='msg meh';msg.innerHTML=`<b>! You earn ${inr(e.contribKept)} per order,</b> but ${w.txt.charAt(0).toLowerCase()+w.txt.slice(1)}`;}
-  else {msg.className='msg good';msg.innerHTML=`<b>✓ Good price.</b> You earn ${inr(e.contribKept)} per order, and no similar listing is cheaper.`;}
+  if(r.edit<fl){msg.className='msg bad';msg.innerHTML=`<span class="mi">✕</span><span><b>Too low.</b> You lose ${amt(e.contribKept)} on every order.</span>`;}
+  else if(w){msg.className='msg meh';msg.innerHTML=`<span class="mi">!</span><span><b>You earn ${inr(e.contribKept)} per order,</b> but ${w.txt.charAt(0).toLowerCase()+w.txt.slice(1)}</span>`;}
+  else {msg.className='msg good';msg.innerHTML=`<span class="mi">✓</span><span><b>Congrats! You have selected a competitive price.</b> <span style="color:var(--sd)">You earn ${inr(e.contribKept)} per order, and no similar listing is cheaper.</span></span>`;}
 }
 
 
@@ -1123,8 +1169,7 @@ function returnsBoxHTML(S,c,noChips){
     <div class="qslide">
       <div class="lbl">Try it: if your returns become <b id="q-slide-v" class="num" style="color:var(--sd);font-size:15px"></b></div>
       <div class="hi-sub">अगर रिटर्न कम-ज़्यादा हों तो क्या होगा, स्लाइडर खिसकाकर देखें</div>
-      <input type="range" id="q-slide" min="${sMin}" max="${sMax}" step="0.5" value="${sVal}" aria-label="Return rate">
-      <div class="qscale num"><span>${sMin}%</span><span>${sMax}%</span></div>
+      ${msHTML({id:'q-slide',lo:sMin,hi:sMax,val:sVal,step:0.5,sd:true,aria:'Return rate',fmt:v=>v+'%',ticks:[{v:Q.catNorm.ret,t:'Others '+pct(Q.catNorm.ret),cls:'gry'},{v:now.ret,t:'You now '+pct(now.ret),cls:'sdk'}]})}
       <div class="qbig" id="q-slide-out"></div>
       <div id="q-curve" style="margin-top:8px;max-width:820px"></div>
       <div class="muted sm">Teal line: what you earn per order at ${inr(p)} for each return rate. Red dot = you now, grey dot = other sellers.</div>
@@ -1135,7 +1180,7 @@ function bindReturns(S,c,redraw){
   const st=c.st,fx=c.X.fix[st.sel];
   document.querySelectorAll('[data-qr]').forEach(b=>b.onclick=()=>{st.sel=+b.dataset.qr;redraw();});
   $('q-fix').onclick=()=>toast(fx[1]+' Watching returns for 14 days.');
-  $('q-slide').oninput=ev=>{st.slide=+ev.target.value;qSlideOut(S,c);};
+  $('q-slide').oninput=ev=>{st.slide=+ev.target.value;msSync('q-slide');qSlideOut(S,c);};
   qSlideOut(S,c);
 }
 function renderQuality(sc){
@@ -1236,7 +1281,7 @@ function renderAutopilot(sc){
         <div class="ctl"><span class="pill ok">Worked out for you</span></div>
         <div class="muted sm">Never goes below this. Updates when your costs change.</div></div>
       <div class="rc"><div class="lbl">Highest price to try</div><div class="num big" id="ap-ce-v">₹${S.ceiling}</div>
-        <div class="ctl"><input type="range" id="ap-ce" min="${Math.ceil((fl+30)/10)*10}" max="${Math.round(S.cat.mrp*0.75/10)*10}" step="10" value="${S.ceiling}" aria-label="Highest price"></div>
+        <div class="ctl">${msHTML({id:'ap-ce',lo:Math.ceil((fl+30)/10)*10,hi:Math.round(S.cat.mrp*0.75/10)*10,val:S.ceiling,step:10,sd:true,aria:'Highest price'})}</div>
         <div class="muted sm">सबसे ऊँचा दाम जो आज़माया जा सकता है</div></div>
       <div class="rc"><div class="lbl">Change my price</div><div class="big">${A.auto?'Automatic':'Ask me first'}</div>
         <div class="ctl"><div class="qseg ap-mode" role="group" aria-label="Who changes the price"><button data-mode="ask" aria-pressed="${!A.auto}">Ask me first</button><button data-mode="auto" aria-pressed="${!!A.auto}">Do it for me</button></div></div>
@@ -1268,7 +1313,7 @@ function renderAutopilot(sc){
   </div>`;
   $('l-en').onclick=()=>{lang='en';renderAutopilot(sc);};$('l-hi').onclick=()=>{lang='hi';renderAutopilot(sc);};
   $('ap-next').onclick=()=>{const a=D().ap,n=D().events.length;if(a.cur<a.reached)a.cur++;else if(a.accepted[a.reached]&&a.reached<n-1){a.reached++;a.cur=a.reached;}drawAP();};
-  $('ap-ce').oninput=ev=>{S.ceiling=+ev.target.value;$('ap-ce-v').textContent='₹'+S.ceiling;drawAP();};
+  $('ap-ce').oninput=ev=>{S.ceiling=+ev.target.value;msSync('ap-ce');$('ap-ce-v').textContent='₹'+S.ceiling;drawAP();};
   sc.querySelectorAll('[data-mode]').forEach(bn=>bn.onclick=()=>{A.auto=bn.dataset.mode==='auto';toast(A.auto?'Autopilot will change prices inside your range and tell you.':'Autopilot will ask you before every change.');renderAutopilot(sc);});
   drawAP();
 }

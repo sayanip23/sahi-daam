@@ -141,27 +141,6 @@ main{padding:0 16px 40px;min-width:0}
 .pop .msg.meh .mi{background:var(--warn)}.pop .msg.bad .mi{background:var(--loss)}
 .pop .btn.pupd{background:var(--brand);color:#fff;border-color:var(--brand)}
 @media (max-width:640px){.pop.mee{width:100%}.pop .prow{flex-direction:column}.pop .pnum{flex:none;width:120px}.pop .pslide{width:100%}}
-.pb-in{position:relative;height:122px}
-.pb-bar{position:absolute;left:0;right:0;top:52px;height:26px;border-radius:13px;overflow:hidden;background:#fff}
-.pb-seg{position:absolute;top:0;bottom:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden}
-.pb-seg.loss{background:#F6C6C1;color:#9B1C1C}.pb-seg.low{background:#FFE3A3;color:#8A5300}.pb-seg.safe{background:#BFE5C8;color:#1B5E20}
-.pb-pin{position:absolute;top:0;width:0;display:flex;flex-direction:column;align-items:center;z-index:2}
-.pb-pin.edgeL{align-items:flex-start}.pb-pin.edgeR{align-items:flex-end}
-.pb-pin span{font-size:12.5px;font-weight:700;padding:3px 8px;border-radius:5px;white-space:nowrap;color:#fff}
-.pb-pin.edgeL span{margin-left:-4px}.pb-pin.edgeR span{margin-right:-4px}
-.pb-pin::after{content:"";width:3px;height:56px;border-radius:2px;margin-top:-1px;align-self:center}
-.pb-pin.row2{top:26px}.pb-pin.row2::after{height:30px}
-.pb-pin.you span{background:var(--ink)}.pb-pin.you::after{background:var(--ink)}
-.pb-pin.sug span{background:var(--sd)}.pb-pin.sug::after{background:var(--sd)}
-.pb-pin.mee span{background:#3949AB}.pb-pin.mee::after{background:#3949AB}
-.pop-band{margin:4px 0 0}.pop-band .pb-key{display:none}.pop-band .pb-pin span{font-size:12px;padding:2px 6px}
-.pb-buy{position:absolute;top:86px;border-top:3px solid #8E6FCF;display:flex;justify-content:center}
-.pb-buy.r{justify-content:flex-end}.pb-buy.l{justify-content:flex-start}
-.pb-buy span{display:inline-block;font-size:12px;color:#5E4499;font-weight:600;margin-top:3px;white-space:nowrap}
-@media (max-width:640px){.pb-seg{font-size:0}}
-.pb-key{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:12px;color:var(--muted);margin-top:2px}
-.pb-key i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:5px}
-.pb-key i.loss{background:#F6C6C1}.pb-key i.low{background:#FFE3A3}.pb-key i.safe{background:#BFE5C8}
 .sd-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
 .viab{margin-top:10px;font-size:13.5px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 details.math{margin-top:14px;border-top:1px solid var(--sd-line);padding-top:10px}
@@ -340,8 +319,6 @@ table.sig td.val{font-weight:500;white-space:nowrap}
 .switch.sdsw[aria-checked="true"]{background:var(--sd)}
 .ph{display:grid;gap:12px;max-width:760px}
 .ph .greyrow{height:44px;border-radius:6px;background:linear-gradient(90deg,#EDEFF4,#F6F7FA)}
-.engines{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
-.engines dl{margin:8px 0 0;display:grid;gap:6px}.engines dt{font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}.engines dd{margin:0}
 ul.clean{margin:8px 0 0;padding-left:18px}ul.clean li{margin:5px 0}
 .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:14px}
 
@@ -354,7 +331,6 @@ ul.clean{margin:8px 0 0;padding-left:18px}ul.clean li{margin:5px 0}
   nav.side button[aria-current="page"]{border-bottom-color:var(--brand)}
   .cat-wrap{grid-template-columns:minmax(0,1fr)}.cat-main{border-right:0;border-bottom:1px solid var(--line)}
   .ap,.mgrid{grid-template-columns:minmax(0,1fr)}
-  .engines{grid-template-columns:minmax(0,1fr)}
 }
 @media (max-width:640px){
   .fgrid,.tiles,.sd-nums,.qgrid,.ratings,.two{grid-template-columns:minmax(0,1fr)}
@@ -384,7 +360,7 @@ ul.clean{margin:8px 0 0;padding-left:18px}ul.clean li{margin:5px 0}
 .seller .btn{align-self:flex-start;margin-top:auto}
 @media (max-width:640px){.sellers{grid-template-columns:minmax(0,1fr)}}
 
-/* mentor-feedback panels */
+/* Catalog Upload extra panels */
 .mp{margin-top:14px;background:#fff;border:1px solid var(--sd-line);border-radius:8px;padding:12px 14px}
 .mp h4{margin:0 0 2px;font-size:15px}
 .mp .sub{font-size:12.5px;color:var(--muted);margin-bottom:8px}
@@ -449,7 +425,7 @@ const SLABS=[{fwd:56,rev:160},{fwd:80,rev:190}]; // deck slide 5: ₹56 catalogu
 function econ(p,x,units){
   /* Exactly the deck (slide 5).
      Floor (five-line napkin) = (stock that stays sold + damaged returns + packing on every parcel + 18% GST on the shipping charge
-                                 + return shipping + ads + product GST + target profit) ÷ parcels that stay sold
+                                 + return shipping + ads + product GST) ÷ parcels that stay sold. Profit per order = price − floor.
      Break-even, real profit per order and max return rate (the three numbers she never sees) count sales and product cost
      on every DELIVERED order, as the slide's P&L does. */
   units=units||1;
@@ -668,12 +644,11 @@ function renderChoose(sc){
 function renderHome(sc){
   const S=D(),Q=S.quality;
   const below=S.rows.filter(r=>r.rec<econ(0,r.x).breakEven);
-  const thin=S.rows.filter(r=>r.rec>=econ(0,r.x).breakEven&&r.rec<econ(0,r.x).floor);
   const retAdd=econ(0,{...S.base,...Q.now}).floor-econ(0,{...S.base,...Q.catNorm}).floor;
   sc.innerHTML=`
   <p class="hello">Namaste, ${S.name}</p><p class="muted" style="margin:0">Here is what needs your attention today.</p>
   <div class="tiles">
-    <div class="card tile sd-box"><span class="sd-badge">Sahi Daam</span><div class="big">${below.length} of ${S.rows.length}</div><p>catalogs would lose money at Meesho’s recommended price.${thin.length?` ${thin.length} more cover${thin.length>1?'':'s'} costs but miss${thin.length>1?'':'es'} your ₹${S.base.target} target profit.`:''}</p><button class="btn sd" data-go="pricerec">Review prices</button></div>
+    <div class="card tile sd-box"><span class="sd-badge">Sahi Daam</span><div class="big">${below.length} of ${S.rows.length}</div><p>catalogs would lose money at Meesho’s recommended price.</p><button class="btn sd" data-go="pricerec">Review prices</button></div>
     <div class="card tile sd-box"><span class="sd-badge">Sahi Daam</span><div class="big">${inr(retAdd)}</div><p>added to your ${Q.short} lowest safe price by returns above the category rate. Top reason: “${Q.reasons[0][0].toLowerCase()}”.</p><button class="btn sd-ghost" data-go="quality">See return reasons</button></div>
     <div class="card tile sd-box"><span class="sd-badge">Sahi Daam</span><div class="big">Autopilot</div><p>${S.apTile.replace('{floor}',inr(econ(0,S.base).floor))}</p><button class="btn sd-ghost" data-go="autopilot">Open autopilot</button></div>
   </div>
@@ -694,20 +669,6 @@ function msHTML(o){
     <input type="range" id="${o.id}" min="${lo}" max="${hi}" step="${o.step||1}" value="${o.val}" aria-label="${esc(o.aria||'Value')}"></div>
     <div class="ends num"><span>${fmt(lo)}</span><span>${fmt(hi)}</span></div></div>`;}
 function msSync(id){const i=$(id);if(!i)return;const lo=+i.min,hi=+i.max;i.closest('.ms').style.setProperty('--f',Math.max(0,Math.min(1,(+i.value-lo)/(hi-lo))).toFixed(4));}
-function bandBar(p,fl,m,sug,be,o){
-  o=o||{};m=m||1;const B=BAND(m);let lo=Math.min(B.lo*0.62,be*0.78,p*0.85),hi=Math.max(B.hi*1.12,p*1.06,(sug||0)*1.06);
-  if(o.range){[lo,hi]=o.range;}   // the price popover passes the slider's own range so the pin sits under the thumb
-  const T=o.short?['✗ Loss','! Low','✓ Safe']:['✗ You lose money','! Low','✓ Safe'],sl=o.sugLabel||'Suggested',yl=o.youLabel===undefined?'Your price ':o.youLabel;
-  const pc=v=>Math.max(0,Math.min(100,(v-lo)/(hi-lo)*100)),w=(a,b)=>Math.max(0,pc(b)-pc(a));
-  const seg=(a,b,cls,txt)=>`<div class="pb-seg ${cls}" style="left:${pc(a)}%;width:${w(a,b)}%">${w(a,b)>11?txt:''}</div>`;
-  const pin=(v,cls,txt)=>`<div class="pb-pin ${cls}${pc(v)<15?' edgeL':pc(v)>85?' edgeR':''}" style="left:${pc(v)}%"><span>${txt}</span></div>`;
-  const same=sug&&Math.abs(sug-p)<1,near=sug&&!same&&Math.abs(pc(sug)-pc(p))<40;
-  let h=`<div class="pb-in"><div class="pb-bar">${seg(lo,be,'loss',T[0])}${seg(be,fl,'low',T[1])}${seg(fl,hi,'safe',T[2])}</div>`;
-  h+=pin(p,'you',same?`${yl}${inr(p)} = ${sl}`:`${yl}${inr(p)}`);
-  if(sug&&!same)h+=pin(sug,(o.sugCls||'sug')+(near?' row2':''),`${sl} ${inr(sug)}`);
-  h+=`<div class="pb-buy${pc(B.hi)>70?' r':pc(B.lo)<30?' l':''}" style="left:${pc(B.lo)}%;width:${w(B.lo,B.hi)}%"><span>${o.short?'Most buyers':'Most buyers pay'} ${inr(B.lo)}–${inr(B.hi)}</span></div>`;
-  return h+`</div><div class="pb-key"><span><i class="loss"></i>You lose money</span>${fl>be?'<span><i class="low"></i>You keep less than you want</span>':''}<span><i class="safe"></i>Safe</span>`;
-}
 const PART_META=[['goods','Product, incl. returns you can’t resell','#7C68A6'],['pack','Packing','#B9AED0'],['fwd','Delivery charge','#0B7A68'],['rev','Return charge','#C62828'],['rtoShip','Undelivered parcels (RTO)','#8D6E63'],['shipGst','18% GST on the delivery charge','#5C6BC0'],['ads','Ads','#D18A00'],['profit','Money you want to keep','#2E7D32']];
 /* Today's Meesho single-catalog flow: Select Category → Add Product Details (Product, Size and Inventory; Product Details; Other Attributes; images) → QC.
    Sahi Daam adds the teal box inside it. */
@@ -814,7 +775,7 @@ function renderCatalog(sc){
   $('c-submit').onclick=()=>{const e=econ(CAT.price,CAT);toast(CAT.price<e.floor?`Heads up: ₹${CAT.price} is below your lowest safe price of ₹${e.floor}. Catalog sent to Meesho for quality check.`:'Catalog sent to Meesho for quality check.');};
   fillMath();updCatalog();
 }
-/* ---- mentor feedback 1: shipping is the seller's biggest controllable cost ---- */
+/* ---- who pays shipping ---- */
 function shipPanel(CAT,e,p){
   const mine=(e.parts.rev+e.parts.rtoShip+e.parts.shipGst)/e.K, fl=e.floor/(1+e.g), cust=p+CAT.fwd;
   const pct=v=>Math.round(v*100);
@@ -825,7 +786,7 @@ function shipPanel(CAT,e,p){
      <div><div class="lbl">You pay</div><div style="font-size:13.5px">Return charges and GST on delivery cost you <b class="num">${inr(mine)}</b> per order, <b>${pct(mine/fl)}%</b> of your lowest safe price. Fewer returns cut this straight away.</div></div>
    </div>`;
 }
-/* ---- mentor feedback 2b: lower the cost before raising the price ---- */
+/* ---- lower the cost before raising the price ---- */
 function cutPanel(CAT){
   const base=econ(0,CAT).floor,L=[];
   const add=(label,how,x)=>{const f=econ(0,{...CAT,...x}).floor;if(base-f>0)L.push([label,how,base-f,f]);};
@@ -843,7 +804,7 @@ function cutPanel(CAT){
    ${L.map(r=>`<tr><td><b>${r[0]}</b></td><td class="muted">${r[1]}</td><td class="n" style="color:var(--gain)">−${inr(r[2])}</td><td class="n">${inr(r[3])}</td></tr>`).join('')}
    <tr><td><b>All of the above</b></td><td></td><td class="n" style="color:var(--gain)"><b>−${inr(base-all)}</b></td><td class="n"><b>${inr(all)}</b></td></tr></tbody></table></div>`;
 }
-/* ---- mentor feedback 2a: which competitors to check at launch ---- */
+/* ---- competitors to check at launch ---- */
 function compPanel(S,CAT,e){
   const m=CAT.m||1,C=S.comps.map(c=>({...c,price:Math.round(c.price)}));
   const below=C.filter(c=>c.price<e.floor).length, best=C.slice().sort((a,b)=>b.rating-a.rating)[0];
@@ -978,7 +939,7 @@ function drawPR(){
     $('pop-ok').onclick=()=>{const fl2=econ(0,r.x).floor,low=r.edit<fl2;accept();toast(low?`Price changed to ₹${r.edit}. This is below your lowest safe price.`:`${r.name}: price changed to ₹${r.edit}`);};
     updPop(r);}
 }
-/* View Comparison: Meesho's competitor view + Sahi Daam's lowest safe price (mentor: check competitors at launch) */
+/* View Comparison: Meesho's competitor view + Sahi Daam's lowest safe price */
 function comparePane(S,r){
   const k=(r.m||1)/(S.cat.m||1),fl=econ(0,r.x).floor;
   const main=r.id===S.rows[0].id;
@@ -1359,7 +1320,7 @@ function renderSettings(sc){
   sc.querySelectorAll('[data-sw]').forEach(b=>b.onclick=()=>{SET[b.dataset.sw]=!SET[b.dataset.sw];b.setAttribute('aria-checked',SET[b.dataset.sw]);});
 }
 
-/* ================= PLACEHOLDER + ABOUT ================= */
+/* ================= PLACEHOLDER SCREENS ================= */
 function renderPH(s){
   let[t,what,use]=PH[s];
   if(s==='ads'&&!D().base.gst)use=`Meesho Ads are not available to sellers without a regular GSTIN, so ${D().owner} can’t buy visibility. Price is her main lever, which is why her first price has to clear her lowest safe price.`;
@@ -1368,30 +1329,6 @@ function renderPH(s){
     <div class="sd-box"><span class="sd-badge">What Sahi Daam reads from here</span><p style="margin:8px 0 0">${use}</p></div>
     <div class="greyrow"></div><div class="greyrow"></div><div class="greyrow"></div>
     <p class="muted" style="font-size:13px">This screen is not built in the prototype.</p></div>`;
-}
-function renderAbout(sc){
-  sc.innerHTML=`<div class="card" style="margin-bottom:14px;border-color:#CFC3EE"><h2>What changed after review, and where it is in the prototype</h2><ul class="clean">
-      <li><b>Forward shipping is not the seller’s cost:</b> the customer pays it on delivered orders. The seller still pays 18% GST on it (deck, slide 5).</li>
-      <li><b>RTO:</b> the product always comes back, so only customer returns can be unsellable (about 1 in 10, deck). Shipping on RTO follows the deck: Meesho’s stated policy is no charge.</li>
-      <li><b>TDS and TCS:</b> left out of the floor (refundable). GST kept at a small assumed rate.</li>
-      <li><b>Who bears shipping?</b> Catalog Upload shows what the customer pays at checkout and what the seller pays (return charges and GST on delivery).</li>
-      <li><b>Launching at a thin margin:</b> Catalog Upload lists the competitors to check, and shows how to lower the floor through cost before raising the price.</li>
-      <li><b>Quality and profit:</b> Quality Dashboard shows how fixing the top return reason changes floor, orders and profit per 1,000 views.</li></ul></div>`+`<div class="engines">
-    <div class="card"><h2>1 · Floor engine</h2><dl><dt>Where</dt><dd>Catalog Upload, next to Meesho Price</dd><dt>Inputs</dt><dd>Purchase cost and GST from the seller; shipping, RTO and return rates from Meesho</dd><dt>Prototype</dt><dd><span class="pill ok">Real math</span> Deck formula: (product + packaging + shipping + GST on shipping + ads + target profit) ÷ parcels that stay sold. Rekha’s ₹185 kurti: break-even ₹368, floor ₹388 with ₹20 profit</dd></dl></div>
-    <div class="card"><h2>2 · Band engine</h2><dl><dt>Where</dt><dd>Catalog Upload band bar; Price Recommendation slider</dd><dt>Inputs</dt><dd>Orders by price for look-alike catalogs, last 30 days</dd><dt>Prototype</dt><dd><span class="pill watch">Simulated</span> One demand curve per category (kurtis, earbuds, chargers…), elasticity 5</dd></dl></div>
-    <div class="card"><h2>3 · Autopilot</h2><dl><dt>Where</dt><dd>New Autopilot page; WhatsApp settings</dd><dt>Inputs</dt><dd>Six signals from Orders, Returns, Quality Dashboard, Payments</dd><dt>Prototype</dt><dd><span class="pill ok">Real rules</span> Deck slide 3 thresholds; scripted events per seller</dd></dl></div>
-  </div>
-  <div class="two">
-    <div class="card"><h2>What we learned from the Supplier Panel</h2><ul class="clean">
-      <li>RTO orders are not charged to the seller; customer returns pay return shipping. The floor already models this.</li>
-      <li>Meesho’s Price Recommendation already shows the Transfer Price (what reaches the bank). Sahi Daam adds the missing third number: earning per kept order.</li>
-      <li>Price Recommendation already has a slider that says “competitive”. We add the floor to that same slider.</li>
-      <li>Quality Dashboard already shows rating, return rate and top return reasons with tips. We add what returns cost in rupees, a “fix this reason” what-if, a returns slider and a profit chart.</li></ul></div>
-    <div class="card"><h2>Still to confirm</h2><ul class="clean">
-      <li>Exact shipping per weight slab, and what else is in the settlement deduction (the tutorial shows about ₹90–100 between price and settlement).</li>
-      <li>Is GST included in Meesho Price or added on top?</li>
-      <li>Can a prototype read real cluster order data, or should it stay simulated?</li></ul></div>
-  </div>`;
 }
 
 /* ================= BOOT ================= */
